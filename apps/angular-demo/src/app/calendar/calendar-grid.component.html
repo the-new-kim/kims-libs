@@ -1,0 +1,38 @@
+<div class="flex justify-between items-center [&>*]:p-1 [&>*]:m-1">
+  <button (click)="calendar.prevMonth()"><</button>
+  <select class="text-white bg-black" (change)="onMonthChange($event)">
+    <option
+      *ngFor="
+        let m of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        let index = index
+      "
+      [selected]="(calendar.date$ | async)?.getMonth() === index"
+      [value]="m"
+    >
+      {{ months[index] }}
+    </option>
+  </select>
+  <span>{{ (calendar.date$ | async)?.getFullYear() }}</span>
+  <button (click)="calendar.nextMonth()">></button>
+</div>
+
+<div
+  class="grid grid-cols-7 text-white [&>*]:p-1 [&>*]:m-1 [&>*]:flex [&>*]:justify-center [&>*]:items-center"
+>
+  <ng-container *ngFor="let week of calendar.grid$ | async; let i = index">
+    <ng-container *ngIf="i === 0">
+      <span *ngFor="let day of week">{{ weekDays[day.getDay()] }}</span>
+    </ng-container>
+    <button
+      *ngFor="let day of week"
+      (click)="selectedDate = day; calendar.setDate(day)"
+      class="p-1 m-1 flex justify-center items-center"
+      [ngClass]="{
+        'bg-blue-500': isDateEqual('day', day, selectedDate),
+        'opacity-50': day.getMonth() !== (calendar.date$ | async)?.getMonth()
+      }"
+    >
+      {{ day.getDate() }}
+    </button>
+  </ng-container>
+</div>

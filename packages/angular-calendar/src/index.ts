@@ -1,1 +1,1 @@
-export * from './lib/angular-calendar.module';
+export * from './calendar';
