@@ -13,7 +13,6 @@ import { CalendarConfig, CalendarService } from '@kims-libs/angular-calendar';
 })
 export class CalendarComponent implements OnInit {
   @Input() selectedDate?: Date;
-  @Input() defaultDate = new Date();
   @Input() calendarConfig?: Partial<CalendarConfig>;
 
   months = [
@@ -31,14 +30,15 @@ export class CalendarComponent implements OnInit {
     'December',
   ];
 
+  weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   constructor(public calendarService: CalendarService) {}
 
   ngOnInit(): void {
-    this.calendarService.setDate(this.selectedDate);
-
-    if (this.calendarConfig) {
-      this.calendarService.setConfig(this.calendarConfig);
+    if (this.selectedDate && this.calendarConfig) {
+      this.calendarConfig['defaultDate'] = this.selectedDate;
     }
+    this.calendarService.init(this.calendarConfig);
   }
 
   isDateEqual(dateUnit: DateUnit, date1: Date, date2: Date | undefined) {

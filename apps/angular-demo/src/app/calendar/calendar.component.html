@@ -1,13 +1,13 @@
 <div class="flex justify-between items-start [&>*]:p-1 [&>*]:m-1">
   <div *ngFor="let grid of calendarService.grids$ | async; let i = index">
-    <div class="flex justify-between items-center [&>*]:p-1 [&>*]:m-1">
-      <span>
+    <div class="grid grid-cols-5 [&>*]:p-1 [&>*]:m-1">
+      <span class="text-start">
         <button *ngIf="i === 0" (click)="calendarService.prevMonth()"><</button>
       </span>
-      <span> {{ months[grid.month] }} </span>
-      <span>{{ grid.year }}</span>
-      <span *ngIf="i !== calendarService.calendarQuantity - 1"></span>
-      <span>
+      <span class="col-span-3 text-center"
+        >{{ months[grid.month] }} {{ grid.year }}</span
+      >
+      <span class="text-end">
         <button
           *ngIf="i === calendarService.calendarQuantity - 1"
           (click)="calendarService.nextMonth()"
@@ -17,8 +17,13 @@
       </span>
     </div>
 
-    <div class="grid grid-cols-7 text-white">
-      <ng-container *ngFor="let week of grid.grid">
+    <div
+      class="grid grid-cols-7 text-white [&>*]:p-1 [&>*]:m-1 [&>*]:flex [&>*]:justify-center [&>*]:items-center"
+    >
+      <ng-container *ngFor="let week of grid.grid; let i = index">
+        <ng-container *ngIf="i === 0">
+          <span *ngFor="let day of week">{{ weekDays[day.getDay()] }}</span>
+        </ng-container>
         <button
           *ngFor="let day of week"
           (click)="selectedDate = day; calendarService.setDate(day)"

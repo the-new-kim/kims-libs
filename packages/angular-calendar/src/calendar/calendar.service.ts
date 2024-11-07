@@ -17,11 +17,9 @@ import {
   providedIn: 'root',
 })
 export class CalendarService {
-  private configSubject: BehaviorSubject<CalendarConfig>;
-  private config$: Observable<CalendarConfig>;
-
   private dateSubject: BehaviorSubject<Date>;
   date$: Observable<Date>;
+
   private gridsSubject = new BehaviorSubject<CalendarGridItem[]>([]);
   grids$ = this.gridsSubject.asObservable();
 
@@ -37,7 +35,6 @@ export class CalendarService {
     @Inject(CALENDAR_CONFIG)
     private config: CalendarConfig | null
   ) {
-    // Initialize config using Dependency Injection
     const { defaultDate, weekStart, minDate, maxDate, calendarQuantity } =
       this.config || DEFAULT_CALENDAR_CONFIG;
 
@@ -48,34 +45,31 @@ export class CalendarService {
     this.calendarQuantity = calendarQuantity;
     this.minDate = minDate;
     this.maxDate = maxDate;
+  }
+
+  init(config?: Partial<CalendarConfig>) {
+    if (config) {
+      this.config = {
+        ...DEFAULT_CALENDAR_CONFIG,
+        ...this.config,
+        ...config,
+      };
+      const { weekStart, defaultDate, minDate, maxDate, calendarQuantity } =
+        this.config;
+
+      this.dateSubject.next(defaultDate);
+
+      (this as { weekStart: number }).weekStart = weekStart;
+      (this as { calendarQuantity: number }).calendarQuantity =
+        calendarQuantity;
+      (this as { minDate: Date }).minDate = minDate;
+      (this as { maxDate: Date }).maxDate = maxDate;
+    }
 
     this.date$.subscribe(() => this.updateCalendarGrid());
-
-    // In cases where configuration is dynamically set within the component
-    this.configSubject = new BehaviorSubject(
-      this.config || DEFAULT_CALENDAR_CONFIG
-    );
-    this.config$ = this.configSubject.asObservable();
-
-    this.config$.subscribe(
-      ({ defaultDate, weekStart, minDate, maxDate, calendarQuantity }) => {
-        this.dateSubject.next(defaultDate);
-        (this as { weekStart: number }).weekStart = weekStart;
-        (this as { calendarQuantity: number }).calendarQuantity =
-          calendarQuantity;
-        (this as { minDate: Date }).minDate = minDate;
-        (this as { maxDate: Date }).maxDate = maxDate;
-
-        this.updateCalendarGrid();
-      }
-    );
   }
 
-  setConfig(config: Partial<CalendarConfig>) {
-    this.configSubject.next({ ...this.configSubject.value, ...config });
-  }
-
-  private updateCalendarGrid() {
+  updateCalendarGrid() {
     const gridsTemp: CalendarGridItem[] = [];
     for (let i = 0; i < this.calendarQuantity; i++) {
       const dateTemp = new Date(
@@ -112,7 +106,7 @@ export class CalendarService {
   setMonth(month: number) {
     const date = new Date(this.dateSubject.value.getFullYear(), month, 1);
     const { startDate, endDate } = this.getStartEndDate(date);
-    if (startDate < this.minDate || endDate > this.maxDate) return;
+    if (startDate < this.minDate || endDate > this.maxDate) return; // 이걸 메소드로 만들어서 UI component 에서도 사용 가능하도록 만들기
     this.dateSubject.next(new Date(date));
   }
 
@@ -145,17 +139,6 @@ export class CalendarService {
     this.setMonth(this.dateSubject.value.getFullYear() + 1);
   }
 
-  private getYearMonth(index: number | 'first' | 'last') {
-    index =
-      index === 'first'
-        ? 0
-        : index === 'last'
-        ? this.calendarQuantity - 1
-        : index;
-    const { year, month } = this.gridsSubject.value[index];
-    return new Date(year, month, 1);
-  }
-
   private getStartEndDate(startDate: Date) {
     const endDate = new Date(
       startDate.getFullYear(),
@@ -167,10 +150,6 @@ export class CalendarService {
       startDate,
       endDate,
     };
-  }
-
-  getCalendarQuantity() {
-    return this.calendarQuantity;
   }
 }
 
