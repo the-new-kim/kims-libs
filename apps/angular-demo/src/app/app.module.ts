@@ -6,7 +6,6 @@ import { appRoutes } from './app.routes';
 import { CalendarComponent } from './calendar/calendar.component';
 import { CalendarModule } from '@kims-libs/angular-calendar';
 import { CalendarGridComponent } from './calendar/calendar-grid.component';
-import { MultiCalendarComponent } from './calendar/multi-calendar.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,7 +15,6 @@ import { MultiCalendarComponent } from './calendar/multi-calendar.component';
     CalendarComponent,
     CalendarModule,
     CalendarGridComponent,
-    MultiCalendarComponent,
   ],
   providers: [],
   bootstrap: [AppComponent],
