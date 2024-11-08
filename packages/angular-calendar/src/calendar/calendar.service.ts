@@ -1,6 +1,7 @@
 import { Inject, Injectable, Optional } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
+  adjustDate,
   CalendarGridItem,
   generateCalendarGrid,
   isDateEqual,
@@ -20,15 +21,23 @@ export class CalendarService {
   private dateSubject: BehaviorSubject<Date>;
   date$: Observable<Date>;
 
-  private gridsSubject = new BehaviorSubject<CalendarGridItem[]>([]);
-  grids$ = this.gridsSubject.asObservable();
+  private gridItemsSubject = new BehaviorSubject<CalendarGridItem[]>([]);
+  gridItems$ = this.gridItemsSubject.asObservable();
 
   readonly weekStart: number;
   readonly minDate: Date;
   readonly maxDate: Date;
   readonly calendarQuantity: number;
 
-  // currentCalendarRange: { start: Date; end: Date };
+  isDateEqual = isDateEqual;
+  adjustDate = adjustDate;
+
+  currentCalendarRange: { start: Date | null; end: Date | null } = {
+    start: null,
+    end: null,
+  };
+
+  private subscription = new Subscription();
 
   constructor(
     @Optional()
@@ -66,10 +75,16 @@ export class CalendarService {
       (this as { maxDate: Date }).maxDate = maxDate;
     }
 
-    this.date$.subscribe(() => this.updateCalendarGrid());
+    this.subscription.add(
+      this.date$.subscribe(() => this.updateCalendarGrid())
+    );
   }
 
-  updateCalendarGrid() {
+  destroy() {
+    this.subscription.unsubscribe();
+  }
+
+  private updateCalendarGrid() {
     const gridsTemp: CalendarGridItem[] = [];
     for (let i = 0; i < this.calendarQuantity; i++) {
       const dateTemp = new Date(
@@ -77,17 +92,29 @@ export class CalendarService {
         this.dateSubject.value.getMonth() + i,
         1
       );
+
       gridsTemp.push(generateCalendarGrid(dateTemp, this.weekStart, true));
     }
-
-    this.gridsSubject.next(gridsTemp);
+    this.gridItemsSubject.next(gridsTemp);
+    this.currentCalendarRange = {
+      start: new Date(
+        this.gridItemsSubject.value[0].year,
+        this.gridItemsSubject.value[0].month,
+        1
+      ),
+      end: new Date(
+        this.gridItemsSubject.value[this.calendarQuantity - 1].year,
+        this.gridItemsSubject.value[this.calendarQuantity - 1].month + 1,
+        0
+      ),
+    };
   }
 
   setDate(date?: Date) {
     const { startDate, endDate } = this.getStartEndDate(
       new Date(
-        this.gridsSubject.value[0].year,
-        this.gridsSubject.value[0].month,
+        this.gridItemsSubject.value[0].year,
+        this.gridItemsSubject.value[0].month,
         1
       )
     );

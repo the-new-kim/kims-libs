@@ -1,36 +1,37 @@
 <div class="flex justify-between items-start [&>*]:p-1 [&>*]:m-1">
-  <div *ngFor="let grid of calendarService.grids$ | async; let i = index">
-    <div class="grid grid-cols-5 [&>*]:p-1 [&>*]:m-1">
-      <span class="text-start">
-        <button *ngIf="i === 0" (click)="calendarService.prevMonth()"><</button>
+  <div
+    *ngFor="let item of calendar.gridItems$ | async; let i = index"
+    class="[&>*]:grid [&>*]:grid-cols-7 [&>*>*]:p-1 [&>*>*]:m-1 [&>*>*]:flex [&>*>*]:justify-center [&>*>*]:items-center"
+  >
+    <div>
+      <span>
+        <button *ngIf="i === 0" (click)="calendar.prevMonth()"><</button>
       </span>
-      <span class="col-span-3 text-center"
-        >{{ months[grid.month] }} {{ grid.year }}</span
+      <span class="col-span-5 text-center"
+        >{{ months[item.month] }} {{ item.year }}</span
       >
-      <span class="text-end">
+      <span>
         <button
-          *ngIf="i === calendarService.calendarQuantity - 1"
-          (click)="calendarService.nextMonth()"
+          *ngIf="i === calendar.calendarQuantity - 1"
+          (click)="calendar.nextMonth()"
         >
           >
         </button>
       </span>
     </div>
 
-    <div
-      class="grid grid-cols-7 text-white [&>*]:p-1 [&>*]:m-1 [&>*]:flex [&>*]:justify-center [&>*]:items-center"
-    >
-      <ng-container *ngFor="let week of grid.grid; let i = index">
+    <div>
+      <ng-container *ngFor="let week of item.grid; let i = index">
         <ng-container *ngIf="i === 0">
           <span *ngFor="let day of week">{{ weekDays[day.getDay()] }}</span>
         </ng-container>
         <button
           *ngFor="let day of week"
-          (click)="selectedDate = day; calendarService.setDate(day)"
+          (click)="selectedDate = day; calendar.setDate(day)"
           class="p-1 m-1 flex justify-center items-center"
           [ngClass]="{
-            'bg-blue-500': isDateEqual('day', day, selectedDate),
-            'opacity-50': day.getMonth() !== grid.month
+            'bg-blue-500': calendar.isDateEqual('day', day, selectedDate),
+            'opacity-50': day.getMonth() !== item.month
           }"
         >
           {{ day.getDate() }}

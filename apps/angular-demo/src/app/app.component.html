@@ -1,9 +1,12 @@
 <div
   class="bg-black text-white min-h-screen flex justify-start items-center flex-col"
 >
-  <app-calendar
-    [calendarConfig]="{ calendarQuantity: 1, weekStart: 1 }"
-  ></app-calendar>
-  <app-calendar></app-calendar>
+  <input type="checkbox" (change)="toggle($event)" />
+  <ng-container *ngIf="show">
+    <app-calendar
+      [calendarConfig]="{ calendarQuantity: 3, weekStart: 1 }"
+    ></app-calendar>
+  </ng-container>
+  <!-- <app-calendar></app-calendar> -->
 </div>
 <!-- <router-outlet></router-outlet>  -->
