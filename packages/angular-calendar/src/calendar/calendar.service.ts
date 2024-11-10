@@ -2,7 +2,9 @@ import { Inject, Injectable, Optional } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   adjustDate,
-  CalendarGridItem,
+  CalendarGrid,
+  CalendarItem,
+  freezeDate,
   generateCalendarGrid,
   isDateEqual,
   isDateWithinRange,
@@ -13,47 +15,49 @@ import {
   CalendarConfig,
   DEFAULT_CALENDAR_CONFIG,
 } from './calendar.config';
+import { CalendarGridService } from './calendar-grid.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CalendarService {
+  ////// 아래 부분 합치기
   private dateSubject: BehaviorSubject<Date>;
-  date$: Observable<Date>;
-
-  private gridItemsSubject = new BehaviorSubject<CalendarGridItem[]>([]);
-  gridItems$ = this.gridItemsSubject.asObservable();
+  private date$: Observable<Date>;
+  private lastDate: Date;
 
   readonly weekStart: number;
+  readonly calendarQuantity: number;
   readonly minDate: Date;
   readonly maxDate: Date;
-  readonly calendarQuantity: number;
+
+  sharedGrids: Map<string, CalendarGrid>;
+  calendarItems: CalendarItem[] = [];
 
   isDateEqual = isDateEqual;
   adjustDate = adjustDate;
-
-  currentCalendarRange: { start: Date | null; end: Date | null } = {
-    start: null,
-    end: null,
-  };
+  isDateWithinRange = isDateWithinRange;
 
   private subscription = new Subscription();
 
   constructor(
+    private calendarGridService: CalendarGridService,
     @Optional()
     @Inject(CALENDAR_CONFIG)
     private config: CalendarConfig | null
   ) {
+    this.sharedGrids = this.calendarGridService.grids;
     const { defaultDate, weekStart, minDate, maxDate, calendarQuantity } =
       this.config || DEFAULT_CALENDAR_CONFIG;
 
     this.dateSubject = new BehaviorSubject(defaultDate);
     this.date$ = this.dateSubject.asObservable();
+    this.lastDate = adjustDate('month', defaultDate, calendarQuantity);
 
     this.weekStart = weekStart;
     this.calendarQuantity = calendarQuantity;
-    this.minDate = minDate;
-    this.maxDate = maxDate;
+    this.minDate = freezeDate(minDate);
+    this.maxDate = freezeDate(maxDate);
   }
 
   init(config?: Partial<CalendarConfig>) {
@@ -67,12 +71,12 @@ export class CalendarService {
         this.config;
 
       this.dateSubject.next(defaultDate);
-
+      this.lastDate = adjustDate('month', defaultDate, calendarQuantity);
       (this as { weekStart: number }).weekStart = weekStart;
       (this as { calendarQuantity: number }).calendarQuantity =
         calendarQuantity;
-      (this as { minDate: Date }).minDate = minDate;
-      (this as { maxDate: Date }).maxDate = maxDate;
+      (this as { minDate: Date }).minDate = freezeDate(minDate);
+      (this as { maxDate: Date }).maxDate = freezeDate(maxDate);
     }
 
     this.subscription.add(
@@ -85,7 +89,8 @@ export class CalendarService {
   }
 
   private updateCalendarGrid() {
-    const gridsTemp: CalendarGridItem[] = [];
+    this.calendarItems = [];
+
     for (let i = 0; i < this.calendarQuantity; i++) {
       const dateTemp = new Date(
         this.dateSubject.value.getFullYear(),
@@ -93,171 +98,97 @@ export class CalendarService {
         1
       );
 
-      gridsTemp.push(generateCalendarGrid(dateTemp, this.weekStart, true));
+      if (i === this.calendarQuantity - 1) {
+        this.lastDate = dateTemp;
+      }
+
+      const year = dateTemp.getFullYear();
+      const month = dateTemp.getMonth();
+      const key = year + '-' + month;
+
+      if (!this.sharedGrids.has(key)) {
+        this.sharedGrids.set(
+          key,
+          generateCalendarGrid(dateTemp, this.weekStart)
+        );
+      }
+
+      this.calendarItems.push({
+        year,
+        month,
+        grid: this.sharedGrids.get(key) as CalendarGrid,
+      });
     }
-    this.gridItemsSubject.next(gridsTemp);
-    this.currentCalendarRange = {
-      start: new Date(
-        this.gridItemsSubject.value[0].year,
-        this.gridItemsSubject.value[0].month,
-        1
-      ),
-      end: new Date(
-        this.gridItemsSubject.value[this.calendarQuantity - 1].year,
-        this.gridItemsSubject.value[this.calendarQuantity - 1].month + 1,
-        0
-      ),
-    };
   }
 
-  setDate(date?: Date) {
-    const { startDate, endDate } = this.getStartEndDate(
-      new Date(
-        this.gridItemsSubject.value[0].year,
-        this.gridItemsSubject.value[0].month,
-        1
-      )
-    );
-
+  setDate(date: Date) {
     if (
-      !date ||
       isDateEqual('month', date, this.dateSubject.value) ||
       !isDateWithinRange(date, this.minDate, this.maxDate) ||
-      isDateWithinRange(date, startDate, endDate)
-    ) {
+      isDateWithinRange(date, this.dateSubject.value, this.lastDate)
+    )
       return;
-    }
     this.dateSubject.next(date);
   }
 
   setMonth(month: number) {
-    const date = new Date(this.dateSubject.value.getFullYear(), month, 1);
-    const { startDate, endDate } = this.getStartEndDate(date);
-    if (startDate < this.minDate || endDate > this.maxDate) return; // 이걸 메소드로 만들어서 UI component 에서도 사용 가능하도록 만들기
-    this.dateSubject.next(new Date(date));
+    this.setDate(new Date(this.dateSubject.value.getFullYear(), month));
   }
 
   prevMonth() {
-    // check only the first date of grids
-    const newDate = new Date(
-      this.dateSubject.value.getFullYear(),
-      this.dateSubject.value.getMonth() - 1
-    );
-    if (newDate < this.minDate) return;
-    this.dateSubject.next(newDate);
+    if (this.validate('prevMonth')) {
+      const prevMonth = adjustDate('month', this.dateSubject.value, -1);
+      this.dateSubject.next(prevMonth);
+    }
   }
 
   nextMonth() {
-    // check only the last date of grids
-
-    this.setMonth(this.dateSubject.value.getMonth() + 1);
+    if (this.validate('nextMonth')) {
+      const nextMonth = adjustDate('month', this.dateSubject.value, 1);
+      this.dateSubject.next(nextMonth);
+    }
   }
 
   setYear(year: number) {
-    // this.setDate(new Date(year, this.dateSubject.value.getMonth(), 1));
-    this.dateSubject.next(new Date(year, this.dateSubject.value.getMonth(), 1));
+    this.setDate(new Date(year, this.dateSubject.value.getMonth()));
   }
 
   prevYear() {
-    this.setMonth(this.dateSubject.value.getFullYear() - 1);
+    this.setYear(this.dateSubject.value.getFullYear() - 1);
   }
 
   nextYear() {
-    this.setMonth(this.dateSubject.value.getFullYear() + 1);
+    this.setYear(this.dateSubject.value.getFullYear() + 1);
   }
 
-  private getStartEndDate(startDate: Date) {
-    const endDate = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth() + this.calendarQuantity,
-      0
-    );
-
-    return {
-      startDate,
-      endDate,
-    };
+  validate(type: 'nextMonth' | 'prevMonth' | 'nextYear' | 'prevYear') {
+    switch (type) {
+      case 'nextMonth': {
+        const nextMonth = new Date(
+          this.lastDate.getFullYear(),
+          this.lastDate.getMonth() + 1,
+          1
+        );
+        return nextMonth <= this.maxDate;
+      }
+      case 'prevMonth': {
+        const prevMonth = new Date(
+          this.dateSubject.value.getFullYear(),
+          this.dateSubject.value.getMonth(),
+          0
+        );
+        return prevMonth >= this.minDate;
+      }
+      case 'nextYear': {
+        const nextYear = new Date(this.lastDate.getFullYear() + 1, 0, 1);
+        return nextYear <= this.maxDate;
+      }
+      case 'prevYear': {
+        const prevYear = new Date(this.lastDate.getFullYear() - 1, 12, 0);
+        return prevYear <= this.maxDate;
+      }
+      default:
+        return false;
+    }
   }
 }
-
-// import { Inject, Injectable, Optional } from '@angular/core';
-// import {
-//   CalendarGrid,
-//   generateCalendarGrid,
-//   isDateEqual,
-//   isDateWithinRange,
-// } from '@kims-libs/core';
-// import { BehaviorSubject, Observable } from 'rxjs';
-// import {
-//   CalendarConfig,
-//   CALENDAR_CONFIG,
-//   DEFAULT_CALENDAR_CONFIG,
-// } from './calendar.config';
-
-// @Injectable()
-// export class CalendarService {
-//   private dateSubject: BehaviorSubject<Date>;
-//   date$: Observable<Date>;
-//   private gridSubject = new BehaviorSubject<CalendarGrid>([]);
-//   grid$ = this.gridSubject.asObservable();
-
-//   private weekStart: number;
-//   private minDate: Date;
-//   private maxDate: Date;
-
-//   constructor(
-//     @Optional() @Inject(CALENDAR_CONFIG) private config: CalendarConfig | null
-//   ) {
-//     const { defaultDate, weekStart, minDate, maxDate } =
-//       this.config || DEFAULT_CALENDAR_CONFIG;
-
-//     this.weekStart = weekStart;
-//     this.minDate = minDate;
-//     this.maxDate = maxDate;
-//     this.dateSubject = new BehaviorSubject(defaultDate);
-
-//     this.date$ = this.dateSubject.asObservable();
-//     this.updateCalendarGrid();
-//     this.date$.subscribe(() => this.updateCalendarGrid());
-//   }
-
-//   private updateCalendarGrid() {
-//     this.gridSubject.next(
-//       generateCalendarGrid(this.dateSubject.value, this.weekStart)
-//     );
-//   }
-
-//   setDate(date?: Date) {
-//     if (
-//       !date ||
-//       isDateEqual('month', date, this.dateSubject.value) ||
-//       !isDateWithinRange(date, this.minDate, this.maxDate)
-//     )
-//       return;
-//     this.dateSubject.next(date);
-//   }
-
-//   setMonth(month: number) {
-//     this.setDate(new Date(this.dateSubject.value.getFullYear(), month, 1));
-//   }
-
-//   prevMonth() {
-//     this.setMonth(this.dateSubject.value.getMonth() - 1);
-//   }
-
-//   nextMonth() {
-//     this.setMonth(this.dateSubject.value.getMonth() + 1);
-//   }
-
-//   setYear(year: number) {
-//     this.setDate(new Date(year, this.dateSubject.value.getMonth(), 1));
-//   }
-
-//   prevYear() {
-//     this.setMonth(this.dateSubject.value.getFullYear() - 1);
-//   }
-
-//   nextYear() {
-//     this.setMonth(this.dateSubject.value.getFullYear() + 1);
-//   }
-// }

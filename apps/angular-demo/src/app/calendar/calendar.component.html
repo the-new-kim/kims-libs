@@ -1,18 +1,43 @@
-<div class="flex justify-between items-start [&>*]:p-1 [&>*]:m-1">
+<div class="flex justify-between items-start gap-10">
   <div
-    *ngFor="let item of calendar.gridItems$ | async; let i = index"
-    class="[&>*]:grid [&>*]:grid-cols-7 [&>*>*]:p-1 [&>*>*]:m-1 [&>*>*]:flex [&>*>*]:justify-center [&>*>*]:items-center"
+    *ngFor="let item of calendar.calendarItems; let i = index"
+    class="[&>*]:grid [&>*]:grid-cols-7 [&>*]:gap-3 [&>*>*]:flex [&>*>*]:justify-center [&>*>*]:items-center"
   >
-    <div>
+    <div class="mb-3">
       <span>
-        <button *ngIf="i === 0" (click)="calendar.prevMonth()"><</button>
+        <button
+          *ngIf="i === 0 && calendar.validate('prevMonth')"
+          (click)="calendar.prevMonth()"
+        >
+          <
+        </button>
       </span>
-      <span class="col-span-5 text-center"
-        >{{ months[item.month] }} {{ item.year }}</span
+      <span class="col-span-5 text-center">
+        <!-- <select
+          *ngIf="isMonthSelectable"
+          class="text-white bg-black"
+          (change)="onMonthChange($event)"
+        >
+          <option
+            *ngFor="
+              let m of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+              let index = index
+            "
+            [selected]="item.month === index"
+            [value]="m"
+          >
+            {{ months[m] }}
+          </option>
+        </select> -->
+
+        {{ months[item.month] }} {{ item.year }}</span
       >
       <span>
         <button
-          *ngIf="i === calendar.calendarQuantity - 1"
+          *ngIf="
+            i === calendar.calendarQuantity - 1 &&
+            calendar.validate('nextMonth')
+          "
           (click)="calendar.nextMonth()"
         >
           >
@@ -25,17 +50,19 @@
         <ng-container *ngIf="i === 0">
           <span *ngFor="let day of week">{{ weekDays[day.getDay()] }}</span>
         </ng-container>
-        <button
-          *ngFor="let day of week"
-          (click)="selectedDate = day; calendar.setDate(day)"
-          class="p-1 m-1 flex justify-center items-center"
-          [ngClass]="{
-            'bg-blue-500': calendar.isDateEqual('day', day, selectedDate),
-            'opacity-50': day.getMonth() !== item.month
-          }"
-        >
-          {{ day.getDate() }}
-        </button>
+        <span *ngFor="let day of week" class="min-w-full min-h-full">
+          <button
+            *ngIf="showOverflowDays || day.getMonth() === item.month"
+            (click)="selectDate(day)"
+            class="w-full h-full"
+            [ngClass]="{
+              'bg-blue-500': calendar.isDateEqual('day', day, selectedDate),
+              'opacity-50': day.getMonth() !== item.month
+            }"
+          >
+            {{ day.getDate() }}
+          </button>
+        </span>
       </ng-container>
     </div>
   </div>

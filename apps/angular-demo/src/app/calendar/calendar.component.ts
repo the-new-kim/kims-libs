@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarConfig, CalendarService } from '@kims-libs/angular-calendar';
+import { isDateWithinRange } from '@kims-libs/core';
 
 @Component({
   selector: 'app-calendar',
@@ -12,6 +13,8 @@ import { CalendarConfig, CalendarService } from '@kims-libs/angular-calendar';
 export class CalendarComponent implements OnInit, OnDestroy {
   @Input() selectedDate?: Date;
   @Input() calendarConfig?: Partial<CalendarConfig>;
+  @Input() showOverflowDays = false;
+  // @Input() isMonthSelectable = false;
 
   months = [
     'January',
@@ -42,4 +45,19 @@ export class CalendarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.calendar.destroy();
   }
+
+  selectDate(date: Date) {
+    if (isDateWithinRange(date, this.calendar.minDate, this.calendar.maxDate)) {
+      this.selectedDate = date;
+      this.calendar.setDate(date);
+    }
+  }
+
+  // onMonthChange(event: Event) {
+  //   const { value } = event.target as HTMLSelectElement;
+  //   if (Number.isNaN(value)) {
+  //     throw new Error('Select value is not a number');
+  //   }
+  //   this.calendar.setMonth(Number(value));
+  // }
 }

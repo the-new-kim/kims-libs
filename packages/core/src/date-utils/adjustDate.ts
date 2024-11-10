@@ -1,6 +1,6 @@
 import { DateUnit } from './types';
 
-export function adjustDate(date: Date, amount: number, unit: DateUnit): Date {
+export function adjustDate(unit: DateUnit, date: Date, amount: number): Date {
   const newDate = new Date(date);
   switch (unit) {
     case 'year':
@@ -31,16 +31,16 @@ export function adjustDate(date: Date, amount: number, unit: DateUnit): Date {
 }
 
 export const adjustYear = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'year');
+  adjustDate('year', date, amount);
 export const adjustMonth = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'month');
+  adjustDate('month', date, amount);
 export const adjustDay = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'day');
+  adjustDate('day', date, amount);
 export const adjustHour = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'hour');
+  adjustDate('hour', date, amount);
 export const adjustMinute = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'minute');
+  adjustDate('minute', date, amount);
 export const adjustSecond = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'second');
+  adjustDate('second', date, amount);
 export const adjustMillisecond = (date: Date, amount: number) =>
-  adjustDate(date, amount, 'millisecond');
+  adjustDate('millisecond', date, amount);

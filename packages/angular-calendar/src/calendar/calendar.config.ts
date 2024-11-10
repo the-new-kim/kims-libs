@@ -12,9 +12,9 @@ export interface CalendarConfig {
 export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
   weekStart: 0,
   defaultDate: freezeDate(new Date()),
-  minDate: freezeDate(new Date(1900, 0, 1)),
-  maxDate: freezeDate(new Date(2024, 11, 31)),
-  calendarQuantity: 4,
+  minDate: freezeDate(new Date(2024, 9, 15)),
+  maxDate: freezeDate(new Date(2024, 11, 15)),
+  calendarQuantity: 1,
 } as const;
 
 export const CALENDAR_CONFIG = new InjectionToken<CalendarConfig>(

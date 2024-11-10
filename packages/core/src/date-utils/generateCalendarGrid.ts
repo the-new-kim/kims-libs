@@ -5,7 +5,7 @@ export interface YearMonth {
   month: number;
 }
 
-export interface CalendarGridItem extends YearMonth {
+export interface CalendarItem extends YearMonth {
   grid: CalendarGrid;
 }
 
@@ -13,12 +13,12 @@ export function generateCalendarGrid<T extends boolean = false>(
   date: Date | YearMonth = new Date(),
   weekStart = 0,
   returnFullItem?: T
-): T extends true ? CalendarGridItem : CalendarGrid {
+): T extends true ? CalendarItem : CalendarGrid {
   const { year, month } = normalizeYearMonth(date);
   const grid = fillCalendarGrid(year, month, weekStart);
 
   return (returnFullItem ? { year, month, grid } : grid) as T extends true
-    ? CalendarGridItem
+    ? CalendarItem
     : CalendarGrid;
 }
 
