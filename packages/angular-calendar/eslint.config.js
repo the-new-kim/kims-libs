@@ -22,7 +22,7 @@ module.exports = [
         'error',
         {
           type: 'attribute',
-          prefix: 'kims',
+          // prefix: 'kims',
           style: 'camelCase',
         },
       ],
@@ -30,7 +30,7 @@ module.exports = [
         'error',
         {
           type: 'element',
-          prefix: 'kims',
+          // prefix: 'kims',
           style: 'kebab-case',
         },
       ],

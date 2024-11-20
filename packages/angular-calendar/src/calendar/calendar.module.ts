@@ -6,10 +6,28 @@ import {
   CalendarConfig,
   DEFAULT_CALENDAR_CONFIG,
 } from './calendar.config';
+import { CalendarDirective } from './directives/calendar.directive';
+import { PrevMonthDirective } from './directives/prevMonth.directive';
+import { NextMonthDirective } from './directives/nextMonth.directive';
+import { PrevYearDirective } from './directives/prevYear.directive';
+import { NextYearDirective } from './directives/nextYear.directive';
+import { MonthSelectDirective } from './directives/monthSelect.directive';
+import { WeekDayNamePipe } from './pipes/weekDayName.pipe';
+
+const directives = [
+  CalendarDirective,
+  PrevMonthDirective,
+  NextMonthDirective,
+  PrevYearDirective,
+  NextYearDirective,
+  MonthSelectDirective,
+];
+
+const pipes = [WeekDayNamePipe];
 
 @NgModule({
-  declarations: [],
-  imports: [CommonModule],
+  imports: [CommonModule, ...directives, ...pipes],
+  exports: [CalendarDirective, ...directives, ...pipes],
   providers: [CalendarService],
 })
 export class CalendarModule {

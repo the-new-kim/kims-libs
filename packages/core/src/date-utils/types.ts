@@ -1,3 +1,5 @@
+import { FixedLengthArray } from '../types';
+
 export type DateUnit =
   | 'year'
   | 'month'
@@ -7,27 +9,5 @@ export type DateUnit =
   | 'second'
   | 'millisecond';
 
-export type MonthNames = [
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string
-];
-
-export type WeekNames = [
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string
-];
+export type MonthNames = FixedLengthArray<string, 12>;
+export type WeekDayNames = FixedLengthArray<string, 7>;

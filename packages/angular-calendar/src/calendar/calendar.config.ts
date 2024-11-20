@@ -1,20 +1,33 @@
 import { InjectionToken, Provider } from '@angular/core';
-import { freezeDate } from '@kims-libs/core';
+import { freezeDate, MonthNames, WeekDayNames } from '@kims-libs/core';
 
 export interface CalendarConfig {
   weekStart: number;
   defaultDate: Date;
-  minDate: Date;
-  maxDate: Date;
   calendarQuantity: number;
+  monthNames: MonthNames;
+  weekDayNames: WeekDayNames;
 }
 
 export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
   weekStart: 0,
   defaultDate: freezeDate(new Date()),
-  minDate: freezeDate(new Date(2024, 9, 15)),
-  maxDate: freezeDate(new Date(2024, 11, 15)),
   calendarQuantity: 1,
+  monthNames: [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ],
+  weekDayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
 } as const;
 
 export const CALENDAR_CONFIG = new InjectionToken<CalendarConfig>(

@@ -9,17 +9,41 @@ export interface CalendarItem extends YearMonth {
   grid: CalendarGrid;
 }
 
-export function generateCalendarGrid<T extends boolean = false>(
+export function generateCalendarGrid(
   date: Date | YearMonth = new Date(),
-  weekStart = 0,
-  returnFullItem?: T
-): T extends true ? CalendarItem : CalendarGrid {
+  weekStart = 0
+): CalendarGrid {
   const { year, month } = normalizeYearMonth(date);
-  const grid = fillCalendarGrid(year, month, weekStart);
+  const grid: CalendarGrid = [];
+  let week: Date[] = [];
 
-  return (returnFullItem ? { year, month, grid } : grid) as T extends true
-    ? CalendarItem
-    : CalendarGrid;
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+
+  weekStart = weekStart % 7;
+  const startOffset = (firstDayOfMonth.getDay() - weekStart + 7) % 7;
+
+  // fill the first week
+  for (let i = 0; i < startOffset; i++) {
+    week.push(new Date(year, month, 1 - startOffset + i));
+  }
+  // fill the rest of the weeks
+  for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+    week.push(new Date(year, month, day));
+    if (week.length === 7) {
+      grid.push(week);
+      week = [];
+    }
+  }
+  // fill the last week
+  if (week.length > 0) {
+    for (let i = 1; week.length < 7; i++) {
+      week.push(new Date(year, month + 1, i));
+    }
+    grid.push(week);
+  }
+
+  return grid;
 }
 
 export function normalizeYearMonth(date: Date | YearMonth): YearMonth {
