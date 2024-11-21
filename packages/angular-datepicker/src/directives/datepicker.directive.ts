@@ -32,7 +32,6 @@ export class DatepickerDirective implements ControlValueAccessor {
     if (value) {
       this.value = value;
     }
-    console.log(value);
   }
 
   registerOnChange(fn: (value: Date) => void): void {

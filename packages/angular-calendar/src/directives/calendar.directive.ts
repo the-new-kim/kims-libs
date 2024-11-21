@@ -5,8 +5,10 @@ import {
   Input,
   OnInit,
   Provider,
+  // DestroyRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+// import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CalendarConfig } from '../calendar.config';
 import { CalendarService } from '../services/calendar.service';
@@ -27,8 +29,12 @@ export const CALENDAR_CONTROL_VALUE_ACCESSOR: Provider = {
 export class CalendarDirective implements OnInit, ControlValueAccessor {
   @Input() defaultDate?: Date;
   @Input() config?: Partial<CalendarConfig>;
+  @Input() minDate?: Date;
+  @Input() maxDate?: Date;
+  @Input() disabledDates?: Date[];
 
   private _calendar = inject(CalendarService);
+  // private _destroyRef = inject(DestroyRef);
 
   // ControlValueAccessor implementation
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -54,7 +60,13 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
 
   isDateEqual = isDateEqual;
 
+  // Add state for disabled status
+  private _disabled = false;
+
   setDate(date: Date) {
+    if (this._disabled || !this.isDateValid(date)) {
+      return;
+    }
     this._calendar.setDate(date);
     this.onChange(date);
     this.onTouched();
@@ -76,10 +88,35 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
     this._calendar.prevYear();
   }
 
+  isDateValid(date: Date): boolean {
+    if (!date) return false;
+
+    if (this.minDate && date < this.minDate) return false;
+    if (this.maxDate && date > this.maxDate) return false;
+    if (
+      this.disabledDates?.some((disabled) => isDateEqual('day', disabled, date))
+    )
+      return false;
+
+    return true;
+  }
+
   ngOnInit(): void {
-    if (this.defaultDate) {
+    // if (this.config) {
+    //   this._calendar.updateConfig(this.config);
+    // }
+
+    if (this.defaultDate && this.isDateValid(this.defaultDate)) {
       this._calendar.setDate(this.defaultDate);
     }
+
+    // Subscribe to calendar changes
+    // this._calendar.dateChange
+    //   .pipe(takeUntilDestroyed(this._destroyRef))
+    //   .subscribe((date) => {
+    //     this.onChange(date);
+    //     this.onTouched();
+    //   });
   }
 
   writeValue(value: Date): void {
@@ -96,8 +133,8 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  // // Optional: Add support for disabled state
-  // setDisabledState?(isDisabled: boolean): void {
-  //   // Implement disable logic if needed
-  // }
+  // Implement disabled state
+  setDisabledState(isDisabled: boolean): void {
+    this._disabled = isDisabled;
+  }
 }

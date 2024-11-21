@@ -4,15 +4,16 @@ import { freezeDate, MonthNames, WeekDayNames } from '@kims-libs/core';
 export interface CalendarConfig {
   weekStart: number;
   defaultDate: Date;
-  calendarQuantity: number;
+  minDate?: Date;
+  maxDate?: Date;
   monthNames: MonthNames;
   weekDayNames: WeekDayNames;
+  disabledDates?: Date[];
 }
 
 export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
   weekStart: 0,
   defaultDate: freezeDate(new Date()),
-  calendarQuantity: 1,
   monthNames: [
     'Jan',
     'Feb',

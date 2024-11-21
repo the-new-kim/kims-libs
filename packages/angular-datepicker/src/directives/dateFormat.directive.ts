@@ -29,7 +29,7 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
 
   _value?: Date;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private onChange: (value: Date) => void = () => {};
+  private onChange: (value?: Date) => void = () => {};
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched: () => void = () => {};
 
@@ -45,39 +45,41 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
       return;
     }
   }
-
-  @HostListener('change', ['$event.target.value']) onInputChange(
-    value: string
-  ) {
-    console.log('onchange');
-    if (!isValidDate(value)) return;
-
-    const parsedDate = new Date(value);
-
-    // this._value = parsedDate;
-    this.onChange(parsedDate);
-  }
-
+  @HostListener('change', ['$event.target.value'])
   @HostListener('blur')
-  onBlur(): void {
-    this.onTouched();
-    const value = (this.el.nativeElement as HTMLInputElement).value;
-    if (!isValidDate(value)) return;
+  onInputChange(value?: string): void {
+    if (!value) {
+      value = (this.el.nativeElement as HTMLInputElement).value;
+    }
+
+    if (!isValidDate(value)) {
+      if (this.el.nativeElement === document.activeElement) return;
+      value = this._value?.toISOString() || '';
+    }
 
     const parsedDate = new Date(value);
-    const formattedDate = this.datePipe.transform(parsedDate, this.format);
-    this.renderer.setProperty(this.el.nativeElement, 'value', formattedDate);
+    this._value = parsedDate;
+    this.updateInputValue(parsedDate);
+    this.onChange(parsedDate);
+
+    if (this.el.nativeElement !== document.activeElement) {
+      this.onTouched();
+    }
   }
 
   writeValue(value: string | Date): void {
     if (!isValidDate(value)) return;
     const parsedDate = value instanceof Date ? value : new Date(value);
-    console.log(parsedDate);
-    const formattedDate = this.datePipe.transform(parsedDate, this.format);
+    this._value = parsedDate;
+    this.updateInputValue(parsedDate);
+  }
+
+  private updateInputValue(date: Date): void {
+    const formattedDate = this.datePipe.transform(date, this.format);
     this.renderer.setProperty(this.el.nativeElement, 'value', formattedDate);
   }
 
-  registerOnChange(fn: (value: Date) => void): void {
+  registerOnChange(fn: (value?: Date) => void): void {
     this.onChange = fn;
   }
 

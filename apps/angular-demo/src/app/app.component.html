@@ -16,12 +16,7 @@
   <div>
     <div class="flex items-center gap-3 mb-5">
       <span>Selected Date:</span>
-      <input
-        class="text-black"
-        [(ngModel)]="selectedDate"
-        dateFormat
-        format="yyyy/MM/dd"
-      />
+      <input class="text-black" [(ngModel)]="selectedDate" dateFormat />
     </div>
     <calendar
       #calendar="calendar"
