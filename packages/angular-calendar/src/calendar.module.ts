@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CalendarService } from './calendar.service';
+import { CalendarService } from './services/calendar.service';
 import {
   CALENDAR_CONFIG,
   CalendarConfig,

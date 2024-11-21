@@ -13,46 +13,62 @@
       </div>
     </div>
   </kims-calendar> -->
-  <calendar
-    #calendar1="calendar"
-    class="flex flex-col justify-between items-start gap-10"
-  >
-    <div class="flex flex-col w-full [&>*]:flex [&>*]:justify-between">
-      <div>
-        <button prevYear>prevYear</button>
-        <span class="col-span-5 text-center">
-          {{ calendar1.year }}
-        </span>
-        <button nextYear>nextYear</button>
-      </div>
-      <div>
-        <button prevMonth>prevMonth</button>
-        <span class="col-span-5 text-center">
-          <select class="text-black" monthSelect></select>
-        </span>
-        <button nextMonth>nextMonth</button>
-      </div>
+  <div>
+    <div class="flex items-center gap-3 mb-5">
+      <span>Selected Date:</span>
+      <input
+        class="text-black"
+        [(ngModel)]="selectedDate"
+        dateFormat
+        format="yyyy/MM/dd"
+      />
     </div>
-
-    <div
-      class="grid grid-cols-7 gap-3 [&>*]:flex [&>*]:justify-center [&>*]:items-center"
+    <calendar
+      #calendar="calendar"
+      class="flex flex-col justify-between items-start gap-10"
+      [defaultDate]="selectedDate"
+      [(ngModel)]="selectedDate"
     >
-      @for (week of calendar1.grid; track $index) { @if ($index === 0) {
-      @for(day of week; track $index) {
-      <span class="p-3">
-        {{ day | weekDayName }}
-      </span>
-      } } @for (day of week; track $index) {
-      <span>
-        <button
-          class="w-full h-full p-3"
-          (click)="calendar1.setDate(day); selectedDate = day"
-        >
-          {{ day.getDate() }}
-        </button>
-      </span>
-      } }
-    </div>
-  </calendar>
+      <div class="flex flex-col w-full [&>*]:flex [&>*]:justify-between">
+        <div>
+          <button prevYear>prevYear</button>
+          <span class="col-span-5 text-center">
+            {{ calendar.year }}
+          </span>
+          <button nextYear>nextYear</button>
+        </div>
+        <div>
+          <button prevMonth>prevMonth</button>
+          <span class="col-span-5 text-center">
+            <select class="text-black" monthSelect></select>
+          </span>
+          <button nextMonth>nextMonth</button>
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-7 gap-3 [&>*]:flex [&>*]:justify-center [&>*]:items-center"
+      >
+        @for (week of calendar.grid; track $index) { @if ($index === 0) {
+        @for(date of week; track $index) {
+        <span class="p-3">
+          {{ date | weekDayName }}
+        </span>
+        } } @for (date of week; track $index) {
+        <span>
+          <button
+            class="p-3"
+            [ngClass]="{
+              'bg-blue-400': calendar.isDateEqual('day', date, selectedDate),
+            }"
+            (click)="calendar.setDate(date)"
+          >
+            {{ date.getDate() }}
+          </button>
+        </span>
+        } }
+      </div>
+    </calendar>
+  </div>
 </div>
 <!-- <router-outlet></router-outlet>  -->

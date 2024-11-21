@@ -1,5 +1,5 @@
 import { inject, Pipe, PipeTransform } from '@angular/core';
-import { CalendarService } from '../calendar.service';
+import { CalendarService } from '../services/calendar.service';
 
 @Pipe({
   name: 'weekDayName',

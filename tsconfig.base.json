@@ -16,6 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@kims-libs/angular-calendar": ["packages/angular-calendar/src/index.ts"],
+      "@kims-libs/angular-datepicker": [
+        "packages/angular-datepicker/src/index.ts"
+      ],
       "@kims-libs/core": ["packages/core/src/index.ts"],
       "@kims-libs/react-calendar": ["packages/react-calendar/src/index.ts"]
     }

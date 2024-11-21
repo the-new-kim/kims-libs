@@ -2,6 +2,7 @@ import { computed, Inject, Injectable, Optional, signal } from '@angular/core';
 import {
   generateCalendarGrid,
   isDateEqual,
+  isValidDate,
   MonthNames,
   WeekDayNames,
 } from '@kims-libs/core';
@@ -10,7 +11,7 @@ import {
   CalendarConfig,
   CALENDAR_CONFIG,
   DEFAULT_CALENDAR_CONFIG,
-} from './calendar.config';
+} from '../calendar.config';
 
 @Injectable()
 export class CalendarService {
@@ -38,7 +39,9 @@ export class CalendarService {
   }
 
   setDate(date: Date) {
-    if (isDateEqual('month', date, this.date())) return;
+    console.log(date, isValidDate(date));
+    if (!isValidDate(date) || isDateEqual('month', date, this.date())) return;
+    console.log('service date valid');
     this.date.set(date);
   }
 

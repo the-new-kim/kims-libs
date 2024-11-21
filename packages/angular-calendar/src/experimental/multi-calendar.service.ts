@@ -14,8 +14,8 @@ import {
   CALENDAR_CONFIG,
   CalendarConfig,
   DEFAULT_CALENDAR_CONFIG,
-} from './calendar.config';
-import { CalendarGridService } from './calendar-grid.service';
+} from '../calendar.config';
+import { sharedCalendarGrids } from './shardCalendarGrids';
 
 @Injectable()
 export class MultiCalendarService {
@@ -29,7 +29,7 @@ export class MultiCalendarService {
   readonly minDate: Date;
   readonly maxDate: Date;
 
-  sharedGrids: Map<string, CalendarGrid>;
+  sharedGrids = sharedCalendarGrids;
   calendarItems: CalendarItem[] = [];
 
   isDateEqual = isDateEqual;
@@ -39,14 +39,11 @@ export class MultiCalendarService {
   private subscription = new Subscription();
   hash = 0;
   constructor(
-    private calendarGridService: CalendarGridService,
     @Optional()
     @Inject(CALENDAR_CONFIG)
     private config: CalendarConfig | null
   ) {
     this.hash = Math.random();
-
-    this.sharedGrids = this.calendarGridService.grids;
     const { defaultDate, weekStart, minDate, maxDate, calendarQuantity } =
       this.config || DEFAULT_CALENDAR_CONFIG;
 

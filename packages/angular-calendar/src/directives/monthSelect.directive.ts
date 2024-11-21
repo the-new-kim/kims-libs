@@ -7,14 +7,14 @@ import {
   Renderer2,
   effect,
 } from '@angular/core';
-import { CalendarService } from '../calendar.service';
+import { CalendarDirective } from './calendar.directive';
 
 @Directive({
   selector: '[monthSelect]',
   standalone: true,
 })
 export class MonthSelectDirective implements OnInit {
-  private calendar = inject(CalendarService);
+  private calendar = inject(CalendarDirective);
   private el: ElementRef = inject(ElementRef);
   private renderer: Renderer2 = inject(Renderer2);
 
@@ -59,7 +59,7 @@ export class MonthSelectDirective implements OnInit {
     }
 
     // Set the current month's option as selected
-    const currentMonthIndex = this.calendar.monthIndex();
+    const currentMonthIndex = this.calendar.monthIndex;
     this.el.nativeElement.selectedIndex = currentMonthIndex;
   }
 
