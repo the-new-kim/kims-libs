@@ -1,9 +1,0 @@
-{
-  "name": "react-calendar",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/react-calendar/src",
-  "projectType": "library",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project react-calendar --web",
-  "targets": {}
-}

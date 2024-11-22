@@ -3,3 +3,44 @@
 @tailwind utilities;
 
 /* You can add global styles to this file, and also import other style files */
+
+* {
+  @apply leading-none;
+}
+
+body {
+  @apply font-doto text-white bg-black;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply mb-3;
+}
+
+h1 {
+  @apply text-[2.5rem];
+}
+
+h2 {
+  @apply text-[2.25rem];
+}
+
+h3 {
+  @apply text-[2rem];
+}
+
+h4 {
+  @apply text-[1.75rem];
+}
+
+input,
+select,
+textarea {
+  @apply text-black p-1;
+}
+
+hr {
+  @apply my-3;
+}

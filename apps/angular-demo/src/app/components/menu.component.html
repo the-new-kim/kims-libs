@@ -1,0 +1,7 @@
+<div class="flex flex-col gap-3">
+  @for( route of routes; track $index) {
+  <a [routerLink]="route.path" routerLinkActive="bg-blue-400">
+    {{ route.data.title }}
+  </a>
+  }
+</div>

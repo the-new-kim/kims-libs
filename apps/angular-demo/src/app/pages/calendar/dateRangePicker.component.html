@@ -1,0 +1,60 @@
+<label class="flex items-center gap-3 mb-5" (click)="showCalendar = true">
+  <span>Start Date:</span>
+  <input [(ngModel)]="value[0]" />
+  <span>End Date:</span>
+  <input [(ngModel)]="value[1]" />
+</label>
+
+@if(showCalendar) {
+<div class="flex border border-white p-5 gap-3">
+  @for (i of [0, 1]; track i) {
+  <calendar
+    #calendar="calendar"
+    class="flex flex-col justify-start items-start max-w-md"
+    [defaultDate]="value[0]"
+    [(ngModel)]="value"
+    onClickOutside
+    (clickOutside)="showCalendar = false"
+  >
+    <div
+      class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square"
+    >
+      @if(i === 0){ <button prevYear><<</button>} @else {<span></span>}
+      <span class="col-span-7 text-center">
+        {{ calendar.year }}
+      </span>
+      @if(i !== 0){ <button nextYear>>></button> } @else {<span></span>} @if(i
+      === 0){ <button prevMonth><</button>} @else {<span></span>}
+      <span class="col-span-7 text-center">
+        <select monthSelect></select>
+      </span>
+      @if(i !== 0){<button nextMonth>></button>} @else {<span></span>}
+    </div>
+
+    <div
+      class="w-full grid grid-cols-7 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
+    >
+      @for (week of calendar.grid; track $index) { @if ($index === 0) {
+      @for(date of week; track $index) {
+      <span class="p-3">
+        {{ date | weekDayName }}
+      </span>
+      } } @for (date of week; track $index) {
+      <span class="w-full h-full">
+        <button
+          class="w-full h-full hover:bg-red-800 rounded-full"
+          [ngClass]="{
+            '!bg-red-600': calendar.isDateEqual('day', date, value[0]),
+            'opacity-50': date.getMonth() !== calendar.monthIndex
+          }"
+          (click)="calendar.setDate(date)"
+        >
+          {{ date.getDate() }}
+        </button>
+      </span>
+      } }
+    </div>
+  </calendar>
+  }
+</div>
+}

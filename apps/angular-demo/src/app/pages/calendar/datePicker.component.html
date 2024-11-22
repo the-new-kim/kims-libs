@@ -1,0 +1,56 @@
+<div>
+  <label class="flex items-center gap-3 mb-5" (click)="showCalendar = true">
+    <span>Selected Date:</span>
+    <input [(ngModel)]="value" dateFormat />
+  </label>
+  @if(showCalendar) {
+  <calendar
+    #calendar="calendar"
+    class="flex flex-col justify-start items-start gap-3 border border-white p-5 max-w-md"
+    [defaultDate]="value"
+    [(ngModel)]="value"
+    onClickOutside
+    (clickOutside)="showCalendar = false"
+  >
+    <div
+      class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square"
+    >
+      <button prevYear><<</button>
+      <span class="col-span-7 text-center">
+        {{ calendar.year }}
+      </span>
+      <button nextYear>>></button>
+
+      <button prevMonth><</button>
+      <span class="col-span-7 text-center">
+        <select monthSelect></select>
+      </span>
+      <button nextMonth>></button>
+    </div>
+
+    <div
+      class="w-full grid grid-cols-7 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
+    >
+      @for (week of calendar.grid; track $index) { @if ($index === 0) {
+      @for(date of week; track $index) {
+      <span class="p-3">
+        {{ date | weekDayName }}
+      </span>
+      } } @for (date of week; track $index) {
+      <span>
+        <button
+          class="w-full h-full p-3 rounded-full hover:bg-red-800"
+          [ngClass]="{
+            '!bg-red-600': calendar.isDateEqual('day', date, value),
+            'opacity-50': date.getMonth() !== calendar.monthIndex
+          }"
+          (click)="calendar.setDate(date)"
+        >
+          {{ date.getDate() }}
+        </button>
+      </span>
+      } }
+    </div>
+  </calendar>
+  }
+</div>
