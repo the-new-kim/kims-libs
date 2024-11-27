@@ -1,4 +1,5 @@
 import { Directive, HostListener, inject } from '@angular/core';
+import { CalendarGroupDirective } from './calendarGroup.directive';
 import { CalendarDirective } from './calendar.directive';
 
 @Directive({
@@ -6,8 +7,18 @@ import { CalendarDirective } from './calendar.directive';
   standalone: true,
 })
 export class PrevYearDirective {
-  private calendar = inject(CalendarDirective);
+  private _calendarGroup = inject(CalendarGroupDirective, {
+    optional: true,
+    skipSelf: true,
+  });
+  private _calendar = inject(CalendarDirective, {
+    optional: true,
+    skipSelf: true,
+  });
+
   @HostListener('click') onClick() {
-    this.calendar.prevYear();
+    const calendar = this._calendarGroup || this._calendar;
+    if (!calendar) return;
+    calendar.prevYear();
   }
 }

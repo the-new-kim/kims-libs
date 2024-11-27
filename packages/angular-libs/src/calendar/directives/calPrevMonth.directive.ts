@@ -3,10 +3,10 @@ import { CalendarGroupDirective } from './calendarGroup.directive';
 import { CalendarDirective } from './calendar.directive';
 
 @Directive({
-  selector: '[nextMonth]',
+  selector: '[calPrevMonth]',
   standalone: true,
 })
-export class NextMonthDirective {
+export class CalPrevMonthDirective {
   private _calendarGroup = inject(CalendarGroupDirective, {
     optional: true,
     skipSelf: true,
@@ -19,6 +19,6 @@ export class NextMonthDirective {
   @HostListener('click') onClick() {
     const calendar = this._calendarGroup || this._calendar;
     if (!calendar) return;
-    calendar.nextMonth();
+    calendar.prevMonth();
   }
 }

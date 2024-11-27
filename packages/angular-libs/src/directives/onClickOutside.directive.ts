@@ -4,6 +4,7 @@ import {
   EventEmitter,
   HostListener,
   Output,
+  Input,
 } from '@angular/core';
 
 @Directive({
@@ -12,13 +13,26 @@ import {
 })
 export class OnClickOutsideDirective {
   @Output() clickOutside = new EventEmitter<void>();
+  @Input() ignoreRefs: (ElementRef | HTMLElement)[] = [];
 
   constructor(private elementRef: ElementRef) {}
 
   @HostListener('document:click', ['$event.target'])
-  public onClick(target: unknown) {
+  public onClick(target: EventTarget | null) {
+    if (!(target instanceof Node)) {
+      return;
+    }
+
     const clickedInside = this.elementRef.nativeElement.contains(target);
-    if (!clickedInside) {
+    const clickedOnIgnored = this.ignoreRefs.some((ref) => {
+      if (ref instanceof ElementRef) {
+        return ref.nativeElement.contains(target);
+      } else {
+        return ref.contains(target);
+      }
+    });
+
+    if (!clickedInside && !clickedOnIgnored) {
       this.clickOutside.emit();
     }
   }

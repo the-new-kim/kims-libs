@@ -1,23 +1,24 @@
 <div>
-  <label class="flex items-center gap-3 mb-5" (click)="showCalendar = true">
+  <label #labelRef class="flex items-center gap-3 mb-5">
     <span>Selected Date:</span>
-    <input [(ngModel)]="value" dateFormat />
+    <input [(ngModel)]="value" dateFormat (focus)="showCalendar = true" />
   </label>
   @if(showCalendar) {
-  <calendar
+  <div
+    calendar
     #calendar="calendar"
     class="flex flex-col justify-start items-start gap-3 border border-white p-5 max-w-md"
-    [defaultDate]="value"
-    [(ngModel)]="value"
     onClickOutside
+    [ignoreRefs]="[labelRef]"
     (clickOutside)="showCalendar = false"
+    [(ngModel)]="value"
   >
     <div
-      class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square"
+      class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square [&>button]:rounded-full"
     >
       <button prevYear><<</button>
       <span class="col-span-7 text-center">
-        {{ calendar.year }}
+        {{ calendar.year() }}
       </span>
       <button nextYear>>></button>
 
@@ -31,7 +32,7 @@
     <div
       class="w-full grid grid-cols-7 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
     >
-      @for (week of calendar.grid; track $index) { @if ($index === 0) {
+      @for (week of calendar.grid(); track $index) { @if ($index === 0) {
       @for(date of week; track $index) {
       <span class="p-3">
         {{ date | weekDayName }}
@@ -39,18 +40,19 @@
       } } @for (date of week; track $index) {
       <span>
         <button
-          class="w-full h-full p-3 rounded-full hover:bg-red-800"
+          class="w-full h-full p-3 rounded-full hover:bg-red-950"
           [ngClass]="{
-            '!bg-red-600': calendar.isDateEqual('day', date, value),
-            'opacity-50': date.getMonth() !== calendar.monthIndex
+            '!bg-red-600': isDateEqual('day', date, value),
+            'opacity-50': date.getMonth() !== calendar.monthIndex()
           }"
           (click)="calendar.setDate(date)"
         >
           {{ date.getDate() }}
+          <!-- {{ date | yearWeek }} -->
         </button>
       </span>
       } }
     </div>
-  </calendar>
+  </div>
   }
 </div>

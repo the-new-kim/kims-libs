@@ -4,8 +4,8 @@ import { freezeDate, MonthNames, WeekDayNames } from '@kims-libs/core';
 export interface CalendarConfig {
   weekStart: number;
   defaultDate: Date;
-  minDate?: Date;
-  maxDate?: Date;
+  minDate?: Date | null;
+  maxDate?: Date | null;
   monthNames: MonthNames;
   weekDayNames: WeekDayNames;
   disabledDates?: Date[];
@@ -32,7 +32,11 @@ export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
 } as const;
 
 export const CALENDAR_CONFIG = new InjectionToken<CalendarConfig>(
-  'CALENDAR_CONFIG'
+  'CALENDAR_CONFIG',
+  {
+    providedIn: 'root',
+    factory: () => DEFAULT_CALENDAR_CONFIG,
+  }
 );
 
 export function provideCalendarConfig(

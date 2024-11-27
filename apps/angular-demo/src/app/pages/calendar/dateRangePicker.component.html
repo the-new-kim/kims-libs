@@ -1,60 +1,84 @@
-<label class="flex items-center gap-3 mb-5" (click)="showCalendar = true">
-  <span>Start Date:</span>
-  <input [(ngModel)]="value[0]" />
-  <span>End Date:</span>
-  <input [(ngModel)]="value[1]" />
-</label>
+<div
+  class="flex justify-start items-center gap-3 mb-5 [&>*]:flex [&>*]:items-center [&>*]:gap-3"
+>
+  <label #labelRef1>
+    <span>Start Date:</span>
+    <input [(ngModel)]="value[0]" dateFormat (focus)="showCalendar = true" />
+  </label>
+  <label #labelRef2>
+    <span>End Date:</span>
+    <input [(ngModel)]="value[1]" dateFormat (focus)="showCalendar = true" />
+  </label>
+  <button (click)="clear()">X</button>
+</div>
 
 @if(showCalendar) {
-<div class="flex border border-white p-5 gap-3">
-  @for (i of [0, 1]; track i) {
-  <calendar
+<div
+  class="flex border border-white p-5 gap-3"
+  calendarGroup
+  [config]="{
+    defaultDate: value[0] || today,
+  }"
+  onClickOutside
+  (clickOutside)="showCalendar = false"
+  [ignoreRefs]="[labelRef1, labelRef2]"
+>
+  @for (i of [0,1]; track $index) {
+  <div
+    calendar
     #calendar="calendar"
     class="flex flex-col justify-start items-start max-w-md"
-    [defaultDate]="value[0]"
-    [(ngModel)]="value"
-    onClickOutside
-    (clickOutside)="showCalendar = false"
   >
     <div
-      class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square"
+      class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square [&>button]:rounded-full"
     >
-      @if(i === 0){ <button prevYear><<</button>} @else {<span></span>}
+      <!-- YEAR -->
+      @if(i === 0){<button prevYear><<</button>} @else {<span></span>}
       <span class="col-span-7 text-center">
-        {{ calendar.year }}
+        {{ calendar.year() }}
       </span>
-      @if(i !== 0){ <button nextYear>>></button> } @else {<span></span>} @if(i
-      === 0){ <button prevMonth><</button>} @else {<span></span>}
+      @if(i !== 0){<button nextYear>>></button> } @else {<span></span>}
+      <!-- MONTH -->
+      @if(i === 0){<button prevMonth><</button>} @else {<span></span>}
       <span class="col-span-7 text-center">
-        <select monthSelect></select>
+        {{ calendar.month() }}
       </span>
       @if(i !== 0){<button nextMonth>></button>} @else {<span></span>}
     </div>
 
     <div
-      class="w-full grid grid-cols-7 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
+      class="w-full grid grid-cols-7 gap-y-1 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
     >
-      @for (week of calendar.grid; track $index) { @if ($index === 0) {
+      @for (week of calendar.grid(); track $index) { @if ($index === 0) {
       @for(date of week; track $index) {
       <span class="p-3">
         {{ date | weekDayName }}
       </span>
       } } @for (date of week; track $index) {
-      <span class="w-full h-full">
+      <span
+        class="w-full h-full relative [&>span]:-z-10"
+        [ngClass]="{
+          'bg-gray-900': isDateWithinRange(date)
+        }"
+      >
+        @if(date.getMonth() === calendar.monthIndex()){
         <button
-          class="w-full h-full hover:bg-red-800 rounded-full"
+          class="w-full h-full hover:bg-red-950 rounded-full"
           [ngClass]="{
-            '!bg-red-600': calendar.isDateEqual('day', date, value[0]),
-            'opacity-50': date.getMonth() !== calendar.monthIndex
+            '!bg-red-600': isSelectedDate(date),
           }"
-          (click)="calendar.setDate(date)"
+          (click)="selectValue(date)"
         >
-          {{ date.getDate() }}
-        </button>
+          {{ date.getDate() }}</button
+        >} @if(isStartOfRange(date)){
+        <span class="absolute top-0 right-0 w-[50%] h-full bg-gray-900"></span>
+        } @if(isEndOfRange(date)){
+        <span class="absolute top-0 left-0 w-[50%] h-full bg-gray-900"></span>
+        }
       </span>
       } }
     </div>
-  </calendar>
+  </div>
   }
 </div>
 }

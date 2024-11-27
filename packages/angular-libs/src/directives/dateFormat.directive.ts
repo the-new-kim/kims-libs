@@ -48,16 +48,16 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
   @HostListener('change', ['$event.target.value'])
   @HostListener('blur')
   onInputChange(value?: string): void {
-    if (!value) {
-      value = (this.el.nativeElement as HTMLInputElement).value;
-    }
+    value = value || (this.el.nativeElement as HTMLInputElement).value;
+
     if (!isValidDate(value)) {
-      if (this.el.nativeElement === document.activeElement) return;
+      if (!this._value || this.el.nativeElement === document.activeElement) {
+        return;
+      }
       value = this._value?.toISOString() || '';
     }
 
     const parsedDate = new Date(value);
-    this._value = parsedDate;
     this.updateInputValue(parsedDate);
     this.onChange(parsedDate);
 
@@ -67,16 +67,21 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
   }
 
   writeValue(value: string | Date): void {
-    if (!isValidDate(value)) return;
-    const parsedDate = value instanceof Date ? value : new Date(value);
-    this._value = parsedDate;
-    this.updateInputValue(parsedDate);
+    // if (!isValidDate(value)) return;
+    // const parsedDate = value instanceof Date ? value : new Date(value);
+    // this._value = parsedDate;
+    this.updateInputValue(value);
   }
 
-  private updateInputValue(value: Date): void {
-    if (!isValidDate(value)) return;
-    const formattedDate = this.datePipe.transform(value, this.format);
-    this.renderer.setProperty(this.el.nativeElement, 'value', formattedDate);
+  private updateInputValue(value: Date | string): void {
+    if (!isValidDate(value)) {
+      value = '';
+      delete this._value;
+    } else {
+      value = this.datePipe.transform(value, this.format) as string;
+      this._value = new Date(value);
+    }
+    this.renderer.setProperty(this.el.nativeElement, 'value', value);
   }
 
   registerOnChange(fn: (value?: Date) => void): void {

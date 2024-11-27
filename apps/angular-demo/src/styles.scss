@@ -38,7 +38,7 @@ h4 {
 input,
 select,
 textarea {
-  @apply text-black p-1;
+  @apply text-white bg-black p-1 border border-white;
 }
 
 hr {

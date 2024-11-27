@@ -14,8 +14,8 @@ import {
   CALENDAR_CONFIG,
   CalendarConfig,
   DEFAULT_CALENDAR_CONFIG,
-} from '../calendar.config';
-import { sharedCalendarGrids } from './shardCalendarGrids';
+} from '../calendar/calendar.config';
+import { sharedCalendarGrids } from '../calendar/shardCalendarGrids';
 
 @Injectable()
 export class MultiCalendarService {

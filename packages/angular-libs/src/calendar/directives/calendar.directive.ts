@@ -1,18 +1,21 @@
 import {
+  computed,
   Directive,
   forwardRef,
   inject,
   Input,
   OnInit,
   Provider,
-  // DestroyRef,
+  signal,
 } from '@angular/core';
+import { CALENDAR_CONFIG, CalendarConfig } from '../calendar.config';
+import {
+  adjustDate,
+  generateCalendarGrid,
+  isDateEqual,
+  isValidDate,
+} from '@kims-libs/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-// import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import { CalendarConfig } from '../../calendar.config';
-import { CalendarService } from '../services/calendar.service';
-import { isDateEqual } from '@kims-libs/core';
 
 export const CALENDAR_CONTROL_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
@@ -21,102 +24,82 @@ export const CALENDAR_CONTROL_VALUE_ACCESSOR: Provider = {
 };
 
 @Directive({
-  selector: 'calendar, [calendar]',
-  providers: [CalendarService, CALENDAR_CONTROL_VALUE_ACCESSOR],
+  selector: '[calendar]',
   standalone: true,
   exportAs: 'calendar',
+  providers: [CALENDAR_CONTROL_VALUE_ACCESSOR],
 })
 export class CalendarDirective implements OnInit, ControlValueAccessor {
-  @Input() defaultDate?: Date | null;
-  @Input() config?: Partial<CalendarConfig>;
-  @Input() minDate?: Date;
-  @Input() maxDate?: Date;
-  @Input() disabledDates?: Date[];
+  private readonly _defaultConfig = inject(CALENDAR_CONFIG);
+  @Input() config: Partial<CalendarConfig> = this._defaultConfig;
 
-  private _calendar = inject(CalendarService);
-  // private _destroyRef = inject(DestroyRef);
+  private _date = signal<Date>(this.config.defaultDate || new Date());
+  year = computed(() => this._date().getFullYear());
+  monthIndex = computed(() => this._date().getMonth());
+  month = computed(() => this.config.monthNames?.[this.monthIndex()]);
+  grid = computed(() =>
+    generateCalendarGrid(this._date(), this.config.weekStart)
+  );
+
+  private _defaultDate = computed(() => this.config.defaultDate || new Date());
 
   // ControlValueAccessor implementation
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onChange: (value: Date) => void = () => {};
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched: () => void = () => {};
-
-  monthNames = this._calendar.monthNames;
-  weekDayNames = this._calendar.weekDayNames;
-
-  get grid() {
-    return this._calendar.grid();
-  }
-  get year() {
-    return this._calendar.year();
-  }
-  get monthIndex() {
-    return this._calendar.monthIndex();
-  }
-  get month() {
-    return this._calendar.month();
-  }
-
-  isDateEqual = isDateEqual;
-
-  // Add state for disabled status
   private _disabled = false;
 
-  setDate(date: Date) {
-    if (this._disabled || !this.isDateValid(date)) {
+  ngOnInit(): void {
+    this.config = { ...this._defaultConfig, ...this.config };
+  }
+
+  setDate(date: Date, emitChange = true) {
+    if (this._disabled || !this.isValidDateSelection(date)) {
       return;
     }
-    this._calendar.setDate(date);
-    this.onChange(date);
-    this.onTouched();
+    this._date.set(date);
+    if (emitChange) {
+      this.onChange(date);
+      this.onTouched();
+    }
   }
+
+  setDateByMonthOffset(offset: number) {
+    this.setDate(adjustDate('month', this._defaultDate(), offset), false);
+  }
+
   setMonth(month: number) {
-    this._calendar.setMonth(month);
+    this.setDate(new Date(this._date().getFullYear(), month), false);
+  }
+
+  prevMonth() {
+    this.setDate(adjustDate('month', this._date(), -1), false);
   }
 
   nextMonth() {
-    this._calendar.nextMonth();
+    this.setDate(adjustDate('month', this._date(), 1), false);
   }
-  prevMonth() {
-    this._calendar.prevMonth();
-  }
-  nextYear() {
-    this._calendar.nextYear();
-  }
+
   prevYear() {
-    this._calendar.prevYear();
+    this.setDate(adjustDate('year', this._date(), -1), false);
   }
 
-  isDateValid(date: Date): boolean {
-    if (!date) return false;
+  nextYear() {
+    this.setDate(adjustDate('year', this._date(), 1), false);
+  }
 
-    if (this.minDate && date < this.minDate) return false;
-    if (this.maxDate && date > this.maxDate) return false;
+  isValidDateSelection(date: Date): boolean {
+    if (!isValidDate(date)) return false;
+    const { minDate, maxDate, disabledDates } = this.config;
     if (
-      this.disabledDates?.some((disabled) => isDateEqual('day', disabled, date))
-    )
+      (minDate && date < minDate) ||
+      (maxDate && date > maxDate) ||
+      disabledDates?.some((disabled) => isDateEqual('day', disabled, date))
+    ) {
       return false;
-
-    return true;
-  }
-
-  ngOnInit(): void {
-    // if (this.config) {
-    //   this._calendar.updateConfig(this.config);
-    // }
-
-    if (this.defaultDate && this.isDateValid(this.defaultDate)) {
-      this._calendar.setDate(this.defaultDate);
     }
-
-    // Subscribe to calendar changes
-    // this._calendar.dateChange
-    //   .pipe(takeUntilDestroyed(this._destroyRef))
-    //   .subscribe((date) => {
-    //     this.onChange(date);
-    //     this.onTouched();
-    //   });
+    return true;
   }
 
   writeValue(value: Date): void {

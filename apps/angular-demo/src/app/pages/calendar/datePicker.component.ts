@@ -5,6 +5,7 @@ import {
   CalendarModule,
   OnClickOutsideDirective,
 } from '@kims-libs/angular-libs';
+import { isDateEqual } from '@kims-libs/core';
 
 @Component({
   selector: 'app-datepicker',
@@ -15,4 +16,5 @@ import {
 export class DatePickerComponent {
   @Input() value?: Date;
   showCalendar = false;
+  isDateEqual = isDateEqual;
 }

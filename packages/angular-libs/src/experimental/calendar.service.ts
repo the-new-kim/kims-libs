@@ -14,7 +14,7 @@ import {
   CalendarConfig,
   CALENDAR_CONFIG,
   DEFAULT_CALENDAR_CONFIG,
-} from '../../calendar.config';
+} from '../calendar/calendar.config';
 
 @Injectable()
 export class CalendarService {
