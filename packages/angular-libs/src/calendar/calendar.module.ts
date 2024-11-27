@@ -10,6 +10,7 @@ import { WeekDayNamePipe } from './pipes/weekDayName.pipe';
 import { DateFormatDirective } from '../directives/dateFormat.directive';
 import { CalendarGroupDirective } from './directives/calendarGroup.directive';
 import { CalendarDirective } from './directives/calendar.directive';
+import { YearWeekPipe } from './pipes/yearWeek.pipe';
 
 const directives = [
   CalendarGroupDirective,
@@ -22,7 +23,7 @@ const directives = [
   DateFormatDirective,
 ];
 
-const pipes = [WeekDayNamePipe];
+const pipes = [WeekDayNamePipe, YearWeekPipe];
 
 @NgModule({
   imports: [CommonModule, ...directives, ...pipes],

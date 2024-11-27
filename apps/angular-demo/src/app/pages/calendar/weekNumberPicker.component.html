@@ -1,7 +1,7 @@
 <div>
   <label #labelRef class="flex items-center gap-3 mb-5">
     <span>Selected Date:</span>
-    <input [(ngModel)]="value" dateFormat (focus)="showCalendar = true" />
+    <input [(ngModel)]="value" (focus)="showCalendar = true" />
   </label>
   @if(showCalendar) {
   <div
@@ -11,7 +11,6 @@
     onClickOutside
     [ignoreRefs]="[labelRef]"
     (clickOutside)="showCalendar = false"
-    [(ngModel)]="value"
   >
     <div
       class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square [&>button]:rounded-full"
@@ -29,28 +28,47 @@
       <button nextMonth>></button>
     </div>
 
-    <div
-      class="w-full grid grid-cols-7 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
-    >
+    <div>
       @for (week of calendar.grid(); track $index) { @if ($index === 0) {
-      @for(date of week; track $index) {
-      <span class="p-3">
-        {{ date | weekDayName }}
-      </span>
-      } } @for (date of week; track $index) {
-      <span>
-        <button
-          class="w-full h-full p-3 rounded-full hover:bg-red-950"
+
+      <div
+        class="w-full grid grid-cols-8 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
+      >
+        @for(date of week; track $index) { @if($index === 0) {
+        <span class="border-r border-white">No.</span>
+        }
+        <span class="p-3">
+          {{ date | weekDayName }}
+        </span>
+        }
+      </div>
+
+      }
+
+      <div
+        class="w-full grid grid-cols-8 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square cursor-pointer hover:bg-red-950 rounded-full"
+        [ngClass]="{
+          '!bg-red-600': value === yearWeek.transform(week[0])
+        }"
+        (click)="value = yearWeek.transform(week[0])"
+      >
+        @for (date of week; track $index) { @if($index === 0) {
+        <span class="border-r border-white">{{
+          date | yearWeek : { format: 'WW', countFrom: 1 }
+        }}</span>
+        }
+        <span
+          class="w-full h-full p-3"
           [ngClass]="{
-            '!bg-red-600': isDateEqual('day', date, value),
             'opacity-50': date.getMonth() !== calendar.monthIndex()
           }"
-          (click)="calendar.setDate(date)"
         >
           {{ date.getDate() }}
-        </button>
-      </span>
-      } }
+        </span>
+        }
+      </div>
+
+      }
     </div>
   </div>
   }
