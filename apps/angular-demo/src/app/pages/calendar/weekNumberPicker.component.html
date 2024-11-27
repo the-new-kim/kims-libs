@@ -46,10 +46,9 @@
       }
 
       <div
-        class="w-full grid grid-cols-8 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square cursor-pointer hover:bg-red-950 rounded-full"
-        [ngClass]="{
-          '!bg-red-600': value === yearWeek.transform(week[0])
-        }"
+        class="w-full grid grid-cols-8 hover:bg-red-950 rounded-full cursor-pointer [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square
+        {{ value === yearWeek.transform(week[0]) ? '!bg-red-600' : '' }}
+        "
         (click)="value = yearWeek.transform(week[0])"
       >
         @for (date of week; track $index) { @if($index === 0) {
@@ -58,10 +57,9 @@
         }}</span>
         }
         <span
-          class="w-full h-full p-3"
-          [ngClass]="{
-            'opacity-50': date.getMonth() !== calendar.monthIndex()
-          }"
+          class="w-full h-full p-3 {{
+            date.getMonth() !== calendar.monthIndex() ? 'opacity-50' : ''
+          }}"
         >
           {{ date.getDate() }}
         </span>

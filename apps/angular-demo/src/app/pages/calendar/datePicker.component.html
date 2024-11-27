@@ -40,11 +40,11 @@
       } } @for (date of week; track $index) {
       <span>
         <button
-          class="w-full h-full p-3 rounded-full hover:bg-red-950"
-          [ngClass]="{
-            '!bg-red-600': isDateEqual('day', date, value),
-            'opacity-50': date.getMonth() !== calendar.monthIndex()
-          }"
+          class="w-full h-full p-3 rounded-full hover:bg-red-950 {{
+            isDateEqual('day', date, value) ? '!bg-red-600' : ''
+          }} {{
+            date.getMonth() !== calendar.monthIndex() ? 'opacity-50' : ''
+          }}"
           (click)="calendar.setDate(date)"
         >
           {{ date.getDate() }}
