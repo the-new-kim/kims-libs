@@ -1,26 +1,20 @@
 import { TIME_IN_MS } from './constants';
 import { freezeDate } from './freezeDate';
+import { WeekDateFormat } from './types';
 
-// weekStart 0 ~ 6 (0: sunday, 6: saturday)
-// mode
-// 0: fist day of week is weekStart
-// 1: with 4 or more days this year
-
-// concept of this function
-// 1. jan1 will be set by both functions 'isLastWeekOfLastYear' or 'isFirstWeekOfNextYear'
-// 2. offset will be calculated by normalizedJan1DayIndex
 export function getYearWeek(
   date: Date,
   {
     weekStart = 0,
     mode = 0,
     countFrom = 0,
-    format = 'YYYY-WW',
+    format = 'YYYY-ww',
   }: WeekNumberOptions = {}
 ) {
   // 0. normalize hours & freeze date to prevent
   date.setHours(0, 0, 0, 0);
   date = freezeDate(date);
+  weekStart = Math.abs(weekStart) % 7;
 
   // 1. January 1
   // 1-1. initialize variables for january 1
@@ -62,15 +56,28 @@ export function getYearWeek(
   const dayDifference = millisecondsDifference / TIME_IN_MS.day;
 
   const weekNumber = Math.floor(dayDifference / 7) + '';
+  const weekdayNumber = normalizeDayIndex(date, weekStart) + 1 + '';
 
-  const formatMap: Record<typeof format, string> = {
-    W: weekNumber,
-    WW: weekNumber.padStart(2, '0'),
-    'YYYY-W': `${year}-${weekNumber}`,
-    'YYYY-WW': `${year}-${weekNumber.padStart(2, '0')}`,
-  };
-
-  return formatMap[format];
+  // prettier-ignore
+  switch (format) {
+    case 'Www':        return 'W' + weekNumber.padStart(2, '0');
+    case 'ww':         return weekNumber.padStart(2, '0');
+    case 'Ww':         return 'W' + weekNumber;
+    case 'w':          return weekNumber;
+    case 'YYYY-Www':   return year + '-' + 'W' + weekNumber.padStart(2, '0');
+    case 'YYYY-ww':    return year + '-' + weekNumber.padStart(2, '0');
+    case 'YYYY-Ww':    return year + '-' + 'W' + weekNumber;
+    case 'YYYY-w':     return year + '-' + weekNumber;
+    case 'YYYYWww':    return year + 'W' + weekNumber.padStart(2, '0');
+    case 'YYYYww':     return year + weekNumber.padStart(2, '0');
+    case 'YYYYWw':     return year + 'W' + weekNumber;
+    case 'YYYYw':      return year + weekNumber;
+    case 'YYYY-Www-D': return year + '-' + 'W' + weekNumber.padStart(2, '0') + '-' + weekdayNumber;
+    case 'YYYY-ww-D':  return year + '-' + weekNumber.padStart(2, '0') + '-' + weekdayNumber
+    case 'YYYY-Ww-D':  return year + '-' + 'W' + weekNumber + '-' + weekdayNumber;
+    case 'YYYY-w-D':   return year + '-' + weekNumber + '-' + weekdayNumber;
+    default:           return year + '-' + weekNumber.padStart(2, '0');
+  }
 }
 
 function isLastWeekOfLastYear(date: Date, weekStart = 0, mode = 0) {
@@ -149,5 +156,5 @@ export interface WeekNumberOptions {
   weekStart?: number;
   mode?: 0 | 1;
   countFrom?: 0 | 1;
-  format?: 'YYYY-WW' | 'YYYY-W' | 'WW' | 'W';
+  format?: WeekDateFormat;
 }
