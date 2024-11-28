@@ -1,12 +1,11 @@
+import { isValidDate } from './isValidDate';
 import { DateUnit } from './types';
 
 export function isDateEqual(
   dateUnit: DateUnit,
   ...dateValues: (Date | null | undefined)[]
 ): boolean {
-  const validDates = dateValues.filter(
-    (date): date is Date => date instanceof Date
-  );
+  const validDates = dateValues.filter(isValidDate);
 
   if (validDates.length < 2) {
     return false;
