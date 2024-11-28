@@ -1,6 +1,5 @@
 import {
   AfterContentInit,
-  ChangeDetectorRef,
   ContentChildren,
   Directive,
   effect,
@@ -28,7 +27,7 @@ export class CalendarGroupDirective implements OnInit, AfterContentInit {
 
   offset = signal(0);
 
-  constructor(private cdRef: ChangeDetectorRef) {
+  constructor() {
     effect(
       () => {
         const offset = this.offset();
@@ -55,8 +54,6 @@ export class CalendarGroupDirective implements OnInit, AfterContentInit {
       );
       calendar.config = { ...this.config, defaultDate };
     });
-
-    this.cdRef.detectChanges();
   }
 
   setOffset(offset: number) {
