@@ -18,4 +18,6 @@ export default {
     'jest-preset-angular/build/serializers/ng-snapshot',
     'jest-preset-angular/build/serializers/html-comment',
   ],
+  modulePathIgnorePatterns: ['<rootDir>/build/'],
+  testPathIgnorePatterns: ['./src/experimental/'],
 };
