@@ -4,7 +4,10 @@
   "license": "MIT",
   "scripts": {
     "dev:angular": "npx nx serve angular-demo --open",
-    "dev:react": "npx nx serve react-demo --open"
+    "dev:react": "npx nx serve react-demo --open",
+    "test": "npx nx run-many --all --target=test",
+    "test:core": "npx nx test core",
+    "test:angular": "npx nx test angular-libs"
   },
   "private": true,
   "devDependencies": {
