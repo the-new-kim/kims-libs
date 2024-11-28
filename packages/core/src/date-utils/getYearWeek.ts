@@ -1,5 +1,6 @@
 import { TIME_IN_MS } from './constants';
 import { freezeDate } from './freezeDate';
+import { normalizeWeekStart } from './normalizeWeekStart';
 import { WeekDateFormat } from './types';
 
 /**
@@ -50,7 +51,7 @@ export function getYearWeek(
   // 0. normalize hours & freeze date to prevent
   date.setHours(0, 0, 0, 0);
   date = freezeDate(date);
-  weekStart = Math.abs(weekStart) % 7;
+  weekStart = normalizeWeekStart(weekStart);
 
   // 1. January 1
   // 1-1. initialize variables for january 1

@@ -1,3 +1,5 @@
+import { normalizeWeekStart } from './normalizeWeekStart';
+
 /**
  * Generates a calendar grid for a given month and year.
  *
@@ -31,7 +33,7 @@ export function generateCalendarGrid(
   const firstDayOfMonth = new Date(year, month, 1);
   const lastDayOfMonth = new Date(year, month + 1, 0);
 
-  weekStart = weekStart % 7;
+  weekStart = normalizeWeekStart(weekStart);
   const startOffset = (firstDayOfMonth.getDay() - weekStart + 7) % 7;
 
   // fill the first week

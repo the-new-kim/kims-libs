@@ -11,3 +11,4 @@ export * from './isDateEqual';
 export * from './isDateWithinRange';
 export * from './isValidDate';
 export * from './getYearWeek';
+export * from './normalizeWeekStart';
