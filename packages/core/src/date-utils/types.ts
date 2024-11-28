@@ -13,27 +13,17 @@ export type MonthNames = FixedLengthArray<string, 12>;
 export type WeekDayNames = FixedLengthArray<string, 7>;
 
 /**
- * This type represents an extended version of the [ISO 8601 week date format](https://en.wikipedia.org/wiki/ISO_8601#Week_dates)
+ * Represents the various formats for representing a year and week.
  *
- * It allows different formats for representing a year, week number, and optionally a weekday number.
- * This type can be useful when dealing with various week date representations,
- * such as parsing week-related data or formatting dates based on the week.
+ * This type allows different formats for representing a year, week number, and optionally a weekday number.
+ * It can be used to flexibly format dates in different week-based representations, accommodating ISO standards or custom formats.
  *
- * The type combines several patterns:
- * - [YYYY]: Represents the year in a four-digit format (e.g., 2024).
- * - [Www]: Represents the week number, where 'W' is an optional prefix, followed by a two-digit week number (e.g., W03, 12).
- * - [D]: Represents the day of the week, with values from 1 (the first day of the week) through 7 (the last day of the week).
- *   For example, if the week starts on Monday, then `1` is Monday and `7` is Sunday.
- *
- * ### Examples:
- *  March 5, 2024 (Sunday as the first day of the week):
- * - `YYYY-ww`: `'2024-10'`
- * - `YYYY-Ww-D` (Tuesday): `'2024-W10-3'`
- *
- * January 15, 2024:
- * - `YYYY-Www`: `'2024-W03'`
- * - `YYYYww` (Week number without hyphen): `'202403'`
- * - `Ww`: `'W3'`
+ * @example
+ * // Examples of formats:
+ * - `'YYYY-ww'`: Represents the year and two-digit week number (e.g., `'2024-03'`).
+ * - `'YYYY-Www-D'`: Represents the year, week number with 'W' prefix, and day of the week (e.g., `'2024-W03-3'`).
+ * - `'Www'`: Represents the week number only, prefixed by 'W' (e.g., `'W03'`).
+ * - `'w'`: Represents a single-digit week number without any prefix (e.g., `'3'`).
  */
 export type WeekDateFormat =
   | `${YearFormat}-${WeekFormat}`
