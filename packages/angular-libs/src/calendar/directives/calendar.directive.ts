@@ -45,9 +45,9 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
 
   // ControlValueAccessor implementation
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private onChange: (value: Date) => void = () => {};
+  private _onChange: (value: Date) => void = () => {};
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private onTouched: () => void = () => {};
+  private _onTouched: () => void = () => {};
   private _disabled = false;
 
   ngOnInit(): void {
@@ -60,8 +60,8 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
     }
     this._date.set(date);
     if (emitChange) {
-      this.onChange(date);
-      this.onTouched();
+      this._onChange(date);
+      this._onTouched();
     }
   }
 
@@ -109,11 +109,11 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
   }
 
   registerOnChange(fn: (value: Date) => void): void {
-    this.onChange = fn;
+    this._onChange = fn;
   }
 
   registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
+    this._onTouched = fn;
   }
 
   // Implement disabled state

@@ -18,7 +18,7 @@ export class CalendarMonthSelectDirective implements OnInit {
   private readonly _defaultConfig = inject(CALENDAR_CONFIG);
 
   private _calendar = inject(CalendarDirective);
-  private _el: ElementRef = inject(ElementRef);
+  private _elementRef: ElementRef = inject(ElementRef);
   private _renderer: Renderer2 = inject(Renderer2);
 
   monthNames =
@@ -32,7 +32,7 @@ export class CalendarMonthSelectDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this._el.nativeElement.tagName.toLowerCase() !== 'select') {
+    if (this._elementRef.nativeElement.tagName.toLowerCase() !== 'select') {
       console.error(
         'monthSelect directive can only be used on <select> elements'
       );
@@ -48,7 +48,7 @@ export class CalendarMonthSelectDirective implements OnInit {
 
       const text = this._renderer.createText(month);
       this._renderer.appendChild(option, text);
-      this._renderer.appendChild(this._el.nativeElement, option);
+      this._renderer.appendChild(this._elementRef.nativeElement, option);
     });
 
     // Initially set the selected option
@@ -57,14 +57,14 @@ export class CalendarMonthSelectDirective implements OnInit {
 
   private _updateSelectedOption() {
     // Reset all options to not selected
-    const options = this._el.nativeElement.options;
+    const options = this._elementRef.nativeElement.options;
     for (let i = 0; i < options.length; i++) {
       options[i].selected = false;
     }
 
     // Set the current month's option as selected
     const currentMonthIndex = this._calendar.monthIndex();
-    this._el.nativeElement.selectedIndex = currentMonthIndex;
+    this._elementRef.nativeElement.selectedIndex = currentMonthIndex;
   }
 
   @HostListener('change', ['$event'])

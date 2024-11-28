@@ -29,16 +29,16 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
 
   _value?: Date;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private onChange: (value?: Date) => void = () => {};
+  private _onChange: (value?: Date) => void = () => {};
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private onTouched: () => void = () => {};
+  private _onTouched: () => void = () => {};
 
-  private el: ElementRef = inject(ElementRef);
-  private renderer: Renderer2 = inject(Renderer2);
-  private datePipe = inject(DatePipe);
+  private _elementRef: ElementRef = inject(ElementRef);
+  private _renderer: Renderer2 = inject(Renderer2);
+  private _datePipe = inject(DatePipe);
 
   ngOnInit(): void {
-    if (this.el.nativeElement.tagName.toLowerCase() !== 'input') {
+    if (this._elementRef.nativeElement.tagName.toLowerCase() !== 'input') {
       console.error(
         'dateFormat directive can only be used on <input> elements'
       );
@@ -48,21 +48,24 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
   @HostListener('change', ['$event.target.value'])
   @HostListener('blur')
   onInputChange(value?: string): void {
-    value = value || (this.el.nativeElement as HTMLInputElement).value;
+    value = value || (this._elementRef.nativeElement as HTMLInputElement).value;
 
     if (!isValidDate(value)) {
-      if (!this._value || this.el.nativeElement === document.activeElement) {
+      if (
+        !this._value ||
+        this._elementRef.nativeElement === document.activeElement
+      ) {
         return;
       }
       value = this._value?.toISOString() || '';
     }
 
     const parsedDate = new Date(value);
-    this.updateInputValue(parsedDate);
-    this.onChange(parsedDate);
+    this._updateInputValue(parsedDate);
+    this._onChange(parsedDate);
 
-    if (this.el.nativeElement !== document.activeElement) {
-      this.onTouched();
+    if (this._elementRef.nativeElement !== document.activeElement) {
+      this._onTouched();
     }
   }
 
@@ -70,29 +73,33 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
     // if (!isValidDate(value)) return;
     // const parsedDate = value instanceof Date ? value : new Date(value);
     // this._value = parsedDate;
-    this.updateInputValue(value);
+    this._updateInputValue(value);
   }
 
-  private updateInputValue(value: Date | string): void {
+  private _updateInputValue(value: Date | string): void {
     if (!isValidDate(value)) {
       value = '';
       delete this._value;
     } else {
-      value = this.datePipe.transform(value, this.format) as string;
+      value = this._datePipe.transform(value, this.format) as string;
       this._value = new Date(value);
     }
-    this.renderer.setProperty(this.el.nativeElement, 'value', value);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'value', value);
   }
 
   registerOnChange(fn: (value?: Date) => void): void {
-    this.onChange = fn;
+    this._onChange = fn;
   }
 
   registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
+    this._onTouched = fn;
   }
 
   setDisabledState?(isDisabled: boolean): void {
-    this.renderer.setProperty(this.el.nativeElement, 'disabled', isDisabled);
+    this._renderer.setProperty(
+      this._elementRef.nativeElement,
+      'disabled',
+      isDisabled
+    );
   }
 }

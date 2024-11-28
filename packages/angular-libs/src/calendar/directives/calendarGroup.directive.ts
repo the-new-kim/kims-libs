@@ -21,7 +21,7 @@ import { adjustDate } from '@kims-libs/core';
 export class CalendarGroupDirective implements OnInit, AfterContentInit {
   private readonly _defaultConfig = inject(CALENDAR_CONFIG);
   @ContentChildren(CalendarDirective, { descendants: true })
-  calendars?: QueryList<CalendarDirective>;
+  private _calendars?: QueryList<CalendarDirective>;
 
   @Input() config?: Partial<CalendarConfig>;
 
@@ -31,7 +31,7 @@ export class CalendarGroupDirective implements OnInit, AfterContentInit {
     effect(
       () => {
         const offset = this.offset();
-        this.calendars?.forEach((calendar) => {
+        this._calendars?.forEach((calendar) => {
           calendar.setDateByMonthOffset(offset);
         });
       },
@@ -46,7 +46,7 @@ export class CalendarGroupDirective implements OnInit, AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    this.calendars?.forEach((calendar, i) => {
+    this._calendars?.forEach((calendar, i) => {
       const defaultDate = adjustDate(
         'month',
         this.config?.defaultDate || new Date(),
