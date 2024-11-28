@@ -7,12 +7,12 @@ import { CalendarGroupDirective } from './directives/calendarGroup.directive';
 import { CalendarDirective } from './directives/calendar.directive';
 import { YearWeekPipe } from './pipes/yearWeek.pipe';
 import { CalendarControlDirective } from './directives/calendarControl.directive';
-import { MonthSelectDirective } from './directives/monthSelect.directive';
+import { CalendarMonthSelectDirective } from './directives/calendarMonthSelect.directive';
 
 const directives = [
   CalendarGroupDirective,
   CalendarDirective,
-  MonthSelectDirective,
+  CalendarMonthSelectDirective,
   CalendarControlDirective,
   DateFormatDirective,
 ];

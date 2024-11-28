@@ -14,7 +14,7 @@ import { CALENDAR_CONFIG } from '../calendar.config';
   selector: '[monthSelect]',
   standalone: true,
 })
-export class MonthSelectDirective implements OnInit {
+export class CalendarMonthSelectDirective implements OnInit {
   private readonly _defaultConfig = inject(CALENDAR_CONFIG);
 
   private _calendar = inject(CalendarDirective);
@@ -27,7 +27,7 @@ export class MonthSelectDirective implements OnInit {
   constructor() {
     // Use effect to track monthIndex signal changes
     effect(() => {
-      this.updateSelectedOption();
+      this._updateSelectedOption();
     });
   }
 
@@ -38,10 +38,10 @@ export class MonthSelectDirective implements OnInit {
       );
       return;
     }
-    this.populateMonths();
+    this._populateMonths();
   }
 
-  private populateMonths() {
+  private _populateMonths() {
     this.monthNames.forEach((month, index) => {
       const option = this._renderer.createElement('option');
       this._renderer.setAttribute(option, 'value', index + '');
@@ -52,10 +52,10 @@ export class MonthSelectDirective implements OnInit {
     });
 
     // Initially set the selected option
-    this.updateSelectedOption();
+    this._updateSelectedOption();
   }
 
-  private updateSelectedOption() {
+  private _updateSelectedOption() {
     // Reset all options to not selected
     const options = this._el.nativeElement.options;
     for (let i = 0; i < options.length; i++) {
