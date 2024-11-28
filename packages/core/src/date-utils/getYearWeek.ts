@@ -88,7 +88,7 @@ export function getYearWeek(
   // 2-1. calculate week number
   const millisecondsDifference =
     Math.abs(date.getTime() - firstWeekDayOfYear.getTime()) +
-    TIME_IN_MS.week * countFrom; // 추후 mode % 2로 업그레이드
+    TIME_IN_MS.week * (countFrom % 2);
   const dayDifference = millisecondsDifference / TIME_IN_MS.day;
 
   const weekNumber = Math.floor(dayDifference / 7) + '';
