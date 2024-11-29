@@ -20,8 +20,7 @@ export class WeekDayNamePipe implements PipeTransform {
   transform(value: Date | number): unknown {
     value = (typeof value === 'number' ? value : value.getDay()) % 7;
     const calendar = this._calendarGroup || this._calendar;
-    if (!calendar) return '';
-    return (calendar.config?.weekDayNames || this._defaultConfig.weekDayNames)[
+    return (calendar?.config?.weekDayNames || this._defaultConfig.weekDayNames)[
       value
     ];
   }
