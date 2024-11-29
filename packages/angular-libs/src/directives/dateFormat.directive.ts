@@ -95,7 +95,7 @@ export class DateFormatDirective implements OnInit, ControlValueAccessor {
     this._onTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void {
+  setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(
       this._elementRef.nativeElement,
       'disabled',
