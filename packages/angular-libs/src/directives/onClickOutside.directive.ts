@@ -25,11 +25,10 @@ export class OnClickOutsideDirective {
 
     const clickedInside = this._elementRef.nativeElement.contains(target);
     const clickedOnIgnored = this.ignoreRefs.some((ref) => {
-      if (ref instanceof ElementRef) {
-        return ref.nativeElement.contains(target);
-      } else {
-        return ref.contains(target);
-      }
+      const targetElement = ref instanceof ElementRef ? ref.nativeElement : ref;
+      return (
+        targetElement instanceof HTMLElement && targetElement.contains(target)
+      );
     });
 
     if (!clickedInside && !clickedOnIgnored) {
