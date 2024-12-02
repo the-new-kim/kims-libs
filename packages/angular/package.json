@@ -26,8 +26,7 @@
   },
   "peerDependencies": {
     "@angular/common": ">=17.2.0",
-    "@angular/core": ">=17.2.0",
-    "@kims-libs/core": "^0.0.1"
+    "@angular/core": ">=17.2.0"
   },
   "sideEffects": false
 }
