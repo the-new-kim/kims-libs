@@ -7,7 +7,7 @@
     "dev:react": "npx nx serve react-demo --open",
     "test": "npx nx run-many --all --target=test",
     "test:core": "npx nx test core",
-    "test:angular": "npx nx test angular-libs"
+    "test:angular": "npx nx test angular"
   },
   "private": true,
   "devDependencies": {

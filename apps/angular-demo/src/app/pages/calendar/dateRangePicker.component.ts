@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  CalendarModule,
-  OnClickOutsideDirective,
-} from '@kims-libs/angular-libs';
+import { CalendarModule, OnClickOutsideDirective } from '@kims-libs/angular';
 import { isDateEqual, isValidDate } from '@kims-libs/core';
 
 @Component({

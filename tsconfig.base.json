@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@kims-libs/angular-libs": ["packages/angular-libs/src/index.ts"],
+      "@kims-libs/angular": ["packages/angular/src/index.ts"],
       "@kims-libs/core": ["packages/core/src/index.ts"]
     }
   },
