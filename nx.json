@@ -8,29 +8,62 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "nxCloudId": "6723db0b9eea0536e177b4d8",
   "namedInputs": {
-    "sharedGlobals": ["{workspaceRoot}/.circleci/config.yml"],
-    "default": ["sharedGlobals"]
+    "sharedGlobals": [
+      "{workspaceRoot}/.circleci/config.yml"
+    ],
+    "default": [
+      "sharedGlobals"
+    ]
   },
   "targetDefaults": {
     "@nx/js:tsc": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^default"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
     },
     "@nx/angular:package": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^default"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
     },
     "@angular-devkit/build-angular:application": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^default"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
     }
   },
   "release": {
+    "projects": [
+      "packages/*"
+    ],
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "{projectName}/v{version}",
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "npx nx run-many -t test build --exclude angular-demo react-demo",
+      "generatorOptions": {
+        "currentVersionResolver": "git-tag",
+        "specifierSource": "conventional-commits"
+      }
+    },
+    "changelog": {
+      "projectChangelogs": {
+        "createRelease": "github"
+      }
     }
   },
   "plugins": [
