@@ -1,9 +1,32 @@
 {
   "name": "@kims-libs/angular-libs",
   "version": "0.0.1",
+  "description": "Angular libraries",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "author": "Hyeongjong Kim",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/the-new-kim/kims-libs.git",
+    "directory": "packages/angular-libs"
+  },
+  "homepage": "https://github.com/the-new-kim/kims-libs/tree/main/packages/angular-libs#readme",
+  "bugs": {
+    "url": "https://github.com/the-new-kim/kims-libs/issues"
+  },
+  "keywords": [
+    "kims-libs",
+    "angular-libs"
+  ],
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
   "peerDependencies": {
-    "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0"
+    "@angular/common": ">=17.2.0",
+    "@angular/core": ">=17.2.0"
   },
   "sideEffects": false
 }
