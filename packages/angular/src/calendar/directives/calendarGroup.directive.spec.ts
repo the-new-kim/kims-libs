@@ -17,7 +17,6 @@ import { By } from '@angular/platform-browser';
 class TestComponent {}
 
 describe('CalendarGroupDirective', () => {
-  let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
   let calendarGroupDirective: CalendarGroupDirective;
   let calendarDirectives: CalendarDirective[];
@@ -52,7 +51,6 @@ describe('CalendarGroupDirective', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
 
     // Retrieve the directive directly from the debug element
@@ -133,7 +131,7 @@ describe('CalendarGroupDirective', () => {
       calendarDirectives.forEach((calendar) => {
         jest
           .spyOn(calendar, 'setDateByMonthOffset')
-          .mockImplementation(() => {});
+          .mockImplementation(jest.fn());
       });
 
       // Trigger offset change
