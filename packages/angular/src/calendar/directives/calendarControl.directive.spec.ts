@@ -29,7 +29,6 @@ class CalendarGroupTestComponent {
 
 describe('CalendarControlDirective with CalendarGroupDirective', () => {
   let fixture: ComponentFixture<CalendarGroupTestComponent>;
-  let component: CalendarGroupTestComponent;
   let calendarGroupEl: DebugElement;
   let calendarGroupDirective: CalendarGroupDirective;
 
@@ -68,7 +67,6 @@ describe('CalendarControlDirective with CalendarGroupDirective', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(CalendarGroupTestComponent);
-    component = fixture.componentInstance;
     calendarGroupEl = fixture.debugElement.query(
       By.directive(CalendarGroupDirective)
     );
@@ -160,7 +158,6 @@ class CalendarTestComponent {
 
 describe('CalendarControlDirective with CalendarDirective', () => {
   let fixture: ComponentFixture<CalendarTestComponent>;
-  let component: CalendarTestComponent;
   let calendarEl: DebugElement;
   let calendarDirective: CalendarDirective;
 
@@ -194,7 +191,6 @@ describe('CalendarControlDirective with CalendarDirective', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(CalendarTestComponent);
-    component = fixture.componentInstance;
     calendarEl = fixture.debugElement.query(By.directive(CalendarDirective));
     calendarDirective = calendarEl.injector.get(CalendarDirective);
     fixture.detectChanges();

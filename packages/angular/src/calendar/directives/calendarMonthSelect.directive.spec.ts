@@ -16,7 +16,6 @@ class TestComponent {}
 
 describe('CalendarMonthSelectDirective', () => {
   let fixture: ComponentFixture<TestComponent>;
-  let component: TestComponent;
   let selectEl: DebugElement;
   let calendarEl: DebugElement;
   let calendarDirective: CalendarDirective;
@@ -51,7 +50,6 @@ describe('CalendarMonthSelectDirective', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestComponent);
-    component = fixture.componentInstance;
     selectEl = fixture.debugElement.query(By.css('select[monthSelect]'));
     calendarEl = fixture.debugElement.query(By.directive(CalendarDirective));
     calendarDirective = calendarEl.injector.get(CalendarDirective);
