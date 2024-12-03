@@ -1,5 +1,5 @@
 {
-  "name": "@kims-libs/angular-libs",
+  "name": "@kims-libs/angular",
   "version": "0.0.1",
   "description": "Angular libraries",
   "private": false,
@@ -11,15 +11,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/the-new-kim/kims-libs.git",
-    "directory": "packages/angular-libs"
+    "directory": "packages/angular"
   },
-  "homepage": "https://github.com/the-new-kim/kims-libs/tree/main/packages/angular-libs#readme",
+  "homepage": "https://github.com/the-new-kim/kims-libs/tree/main/packages/angular#readme",
   "bugs": {
     "url": "https://github.com/the-new-kim/kims-libs/issues"
   },
   "keywords": [
     "kims-libs",
-    "angular-libs"
+    "angular"
   ],
   "dependencies": {
     "tslib": "^2.3.0"

@@ -5,7 +5,7 @@ import {
   CalendarModule,
   OnClickOutsideDirective,
   YearWeekPipe,
-} from '@kims-libs/angular-libs';
+} from '@kims-libs/angular';
 import { isDateEqual } from '@kims-libs/core';
 
 @Component({
