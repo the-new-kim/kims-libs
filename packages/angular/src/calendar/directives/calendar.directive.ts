@@ -1,4 +1,5 @@
 import {
+  AfterContentInit,
   computed,
   Directive,
   forwardRef,
@@ -16,6 +17,7 @@ import {
   isValidDate,
 } from '@kims-libs/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { CalendarGroupDirective } from './calendarGroup.directive';
 
 export const CALENDAR_CONTROL_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
@@ -29,7 +31,13 @@ export const CALENDAR_CONTROL_VALUE_ACCESSOR: Provider = {
   exportAs: 'calendar',
   providers: [CALENDAR_CONTROL_VALUE_ACCESSOR],
 })
-export class CalendarDirective implements OnInit, ControlValueAccessor {
+export class CalendarDirective
+  implements OnInit, AfterContentInit, ControlValueAccessor
+{
+  private _calendarGroup = inject(CalendarGroupDirective, {
+    optional: true,
+    skipSelf: true,
+  });
   private readonly _defaultConfig = inject(CALENDAR_CONFIG);
   @Input() config: Partial<CalendarConfig> = this._defaultConfig;
 
@@ -52,6 +60,10 @@ export class CalendarDirective implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     this.config = { ...this._defaultConfig, ...this.config };
+  }
+
+  ngAfterContentInit(): void {
+    this._calendarGroup?.addCalendar(this);
   }
 
   setDate(date: Date, emitChange = true) {

@@ -1,12 +1,9 @@
 import {
-  AfterContentInit,
-  ContentChildren,
   Directive,
   effect,
   inject,
   Input,
   OnInit,
-  QueryList,
   signal,
 } from '@angular/core';
 import { CALENDAR_CONFIG, CalendarConfig } from '../calendar.config';
@@ -18,10 +15,9 @@ import { adjustDate } from '@kims-libs/core';
   standalone: true,
   exportAs: 'calendarGroup',
 })
-export class CalendarGroupDirective implements OnInit, AfterContentInit {
+export class CalendarGroupDirective implements OnInit {
   private readonly _defaultConfig = inject(CALENDAR_CONFIG);
-  @ContentChildren(CalendarDirective, { descendants: true })
-  private _calendars?: QueryList<CalendarDirective>;
+  private _calendars: CalendarDirective[] = [];
 
   @Input() config?: Partial<CalendarConfig>;
 
@@ -30,9 +26,8 @@ export class CalendarGroupDirective implements OnInit, AfterContentInit {
   constructor() {
     effect(
       () => {
-        const offset = this.offset();
-        this._calendars?.forEach((calendar) => {
-          calendar.setDateByMonthOffset(offset);
+        this._calendars.forEach((calendar) => {
+          calendar.setDateByMonthOffset(this.offset());
         });
       },
       {
@@ -45,15 +40,20 @@ export class CalendarGroupDirective implements OnInit, AfterContentInit {
     this.config = { ...this._defaultConfig, ...this.config };
   }
 
-  ngAfterContentInit(): void {
-    this._calendars?.forEach((calendar, i) => {
-      const defaultDate = adjustDate(
+  private _getDefaultCalendarConfig(index: number) {
+    return {
+      ...this.config,
+      defaultDate: adjustDate(
         'month',
         this.config?.defaultDate || new Date(),
-        i
-      );
-      calendar.config = { ...this.config, defaultDate };
-    });
+        index
+      ),
+    };
+  }
+
+  addCalendar(calendar: CalendarDirective) {
+    calendar.config = this._getDefaultCalendarConfig(this._calendars.length);
+    this._calendars = [...this._calendars, calendar];
   }
 
   setOffset(offset: number) {
