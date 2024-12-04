@@ -1,3 +1,17 @@
+## 0.2.0 (2024-12-04)
+
+### 🚀 Features
+
+- **angular:** extend `CalendarMonthSelectDirective` to work with `CalendarGroupDirective` ([c3e15fd](https://github.com/the-new-kim/kims-libs/commit/c3e15fd))
+
+### 🩹 Fixes
+
+- **angular:** ensure CalendarGroupDirective recognizes nested CalendarDirective ([25d8a7e](https://github.com/the-new-kim/kims-libs/commit/25d8a7e))
+
+### ❤️ Thank You
+
+- Hyeongjong Kim @the-new-kim
+
 ## 0.1.0 (2024-12-03)
 
 ### 🚀 Features
