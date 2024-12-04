@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { CalendarDirective } from './calendar.directive';
 import { CALENDAR_CONFIG } from '../calendar.config';
+import { CalendarGroupDirective } from './calendarGroup.directive';
 
 @Directive({
   selector: '[monthSelect]',
@@ -16,7 +17,10 @@ import { CALENDAR_CONFIG } from '../calendar.config';
 })
 export class CalendarMonthSelectDirective implements OnInit {
   private readonly _defaultConfig = inject(CALENDAR_CONFIG);
-
+  private _calendarGroup = inject(CalendarGroupDirective, {
+    optional: true,
+    skipSelf: true,
+  });
   private _calendar = inject(CalendarDirective);
   private _elementRef: ElementRef = inject(ElementRef);
   private _renderer: Renderer2 = inject(Renderer2);
@@ -71,6 +75,12 @@ export class CalendarMonthSelectDirective implements OnInit {
   onChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedMonth = parseInt(selectElement.value, 10);
-    this._calendar.setMonth(selectedMonth);
+    if (this._calendarGroup) {
+      const offset = this._calendarGroup.offset();
+      const calendarMonth = this._calendar.monthIndex();
+      this._calendarGroup.setOffset(selectedMonth - calendarMonth + offset);
+    } else {
+      this._calendar.setMonth(selectedMonth);
+    }
   }
 }
