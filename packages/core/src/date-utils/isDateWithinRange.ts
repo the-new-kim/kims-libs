@@ -28,5 +28,5 @@ export function isDateWithinRange(
 ) {
   if (min && date < min) return false;
   if (max && date > max) return false;
-  return false;
+  return true;
 }
