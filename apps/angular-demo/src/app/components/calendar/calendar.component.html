@@ -1,0 +1,50 @@
+<div
+  calendar
+  #calendar="calendar"
+  class="flex flex-col justify-start items-start gap-3 max-w-md"
+  [ngModel]="selectedDate"
+  (ngModelChange)="onNgModelChange($event)"
+>
+  <app-calendar-header class="w-full"></app-calendar-header>
+
+  <div
+    class="w-full grid grid-cols-7 gap-y-1 [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square"
+    *calendarState="let state"
+  >
+    @for (week of state.grid(); track $index) { @if ($index === 0) { @for (date
+    of week; track $index) {
+    <span class="p-3">
+      {{ date | weekDayName }}
+    </span>
+    } } @for (date of week; track $index) {
+    <span class="w-full h-full relative">
+      @if (showOverFlow || date.getMonth() === calendar.monthIndex() ){
+      <button
+        class="w-full h-full p-3 rounded-full hover:bg-red-950 {{
+          is(date, 'selected') ? '!bg-red-600' : ''
+        }} 
+        {{ date.getMonth() !== calendar.monthIndex() ? 'opacity-50' : '' }}
+        {{
+          !calendar.isValidDateSelection(date)
+            ? 'cursor-not-allowed opacity-50 hover:bg-transparent'
+            : ''
+        }}
+        "
+        (click)="dateClick(date, calendar)"
+        [disabled]="!calendar.isValidDateSelection(date)"
+      >
+        {{ date.getDate() }}
+      </button>
+
+      <div
+        class="absolute top-0 h-full -z-10 
+        {{ is(date, 'startOfRange') ? 'left-1/2 w-1/2 bg-gray-900' : '' }}
+        {{ is(date, 'endOfRange') ? 'left-0 w-1/2 bg-gray-900' : '' }}
+        {{ is(date, 'withinRange') ? 'left-0 w-full bg-gray-900' : '' }}
+        "
+      ></div>
+      }
+    </span>
+    } }
+  </div>
+</div>

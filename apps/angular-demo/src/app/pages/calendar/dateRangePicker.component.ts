@@ -3,11 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarModule, OnClickOutsideDirective } from '@kims-libs/angular';
 import { isDateEqual, isValidDate } from '@kims-libs/core';
+import { CalendarComponent } from '../../components/calendar/calendar.component';
 
 @Component({
   selector: 'app-date-range-picker',
   standalone: true,
-  imports: [CommonModule, FormsModule, CalendarModule, OnClickOutsideDirective],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CalendarModule,
+    OnClickOutsideDirective,
+    CalendarComponent,
+  ],
   templateUrl: './dateRangePicker.component.html',
 })
 export class DateRangePickerComponent {
@@ -42,6 +49,38 @@ export class DateRangePickerComponent {
       }
       return;
     }
+  }
+
+  selectValue2 = (date: Date) => {
+    if (!isValidDate(date)) return;
+    const [startDate, endDate] = this.value;
+
+    // Both dates already selected - start new range
+    if (startDate && endDate) {
+      this.clear();
+      this.value[0] = date;
+      return;
+    }
+
+    // No dates selected - set start date
+    if (!startDate && !endDate) {
+      this.value[0] = date;
+      return;
+    }
+
+    // Start date selected - set end date based on comparison
+    if (startDate && !endDate) {
+      if (date <= startDate) {
+        this.value[0] = date;
+      } else {
+        this.value[1] = date;
+      }
+      return;
+    }
+  };
+
+  getBoundedSelectValue() {
+    return this.selectValue.bind(this);
   }
 
   isDateWithinRange(date: Date) {

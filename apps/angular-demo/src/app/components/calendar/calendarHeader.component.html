@@ -1,0 +1,15 @@
+<div
+  class="grid grid-cols-9 w-full [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>button]:aspect-square [&>button]:rounded-full"
+>
+  <button prevYear><<</button>
+  <span class="col-span-7 text-center" *calendarState="let data">
+    {{ data.year() }}
+  </span>
+  <button nextYear>>></button>
+
+  <button prevMonth><</button>
+  <span class="col-span-7 text-center">
+    <select monthSelect></select>
+  </span>
+  <button nextMonth>></button>
+</div>
