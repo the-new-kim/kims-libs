@@ -12,8 +12,10 @@ import {
 import { CALENDAR_CONFIG, CalendarConfig } from '../calendar.config';
 import {
   adjustDate,
+  DateUnit,
   generateCalendarGrid,
   isDateEqual,
+  isDateWithinRange,
   isValidDate,
 } from '@kims-libs/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -101,12 +103,11 @@ export class CalendarDirective
     this.setDate(adjustDate('year', this._date(), 1), false);
   }
 
-  isValidDateSelection(date: Date): boolean {
+  isValidDateSelection(date: Date, unit: DateUnit = 'day'): boolean {
     if (!isValidDate(date)) return false;
     const { minDate, maxDate, disabledDates } = this.config;
     if (
-      (minDate && date < minDate) ||
-      (maxDate && date > maxDate) ||
+      !isDateWithinRange(date, { minDate, maxDate, unit }) ||
       disabledDates?.some((disabled) => isDateEqual('day', disabled, date))
     ) {
       return false;

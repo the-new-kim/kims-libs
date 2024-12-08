@@ -1,32 +1,70 @@
+import { isNumberWithinRange } from '../utils';
+import { normalizeDate } from './normalizeDate';
+import { DateUnit } from './types';
+
 /**
- * Determines if a given date falls within a specified range.
+ * Checks if a given date falls within a specified range, with optional normalization by a date unit.
  *
- * This function checks if the provided `date` is within the optional `min` and `max` date boundaries.
- * If either boundary is not provided (`null` or `undefined`), it is ignored during the comparison.
+ * This function verifies whether the `date` is within the bounds of `minDate` and `maxDate`.
+ * It allows for comparisons at different levels of granularity (e.g., year, month, day) by normalizing
+ * the dates using the specified unit.
  *
  * @param date - The `Date` object to be checked.
- * @param min - The optional minimum `Date` boundary. If provided, `date` must be equal to or after this value.
- * @param max - The optional maximum `Date` boundary. If provided, `date` must be equal to or before this value.
- * @returns `true` if the `date` is within the specified range, otherwise `false`.
+ * @param options - An optional object containing additional parameters to define the range and granularity.
+ * @param options.minDate - The optional minimum date boundary. If provided, the `date` must not be earlier than this value.
+ * @param options.maxDate - The optional maximum date boundary. If provided, the `date` must not be later than this value.
+ * @param options.unit - The date unit used for normalization (`millisecond` by default). This determines the granularity of the comparison.
+ *                       See {@link DateUnit} for possible values.
+ * @returns `true` if the `date` falls within the specified range, otherwise `false`.
  *
  * @example
- * // Example 1: Check if a date is within a given range
- * isDateWithinRange(new Date('2024-05-15'), new Date('2024-01-01'), new Date('2024-12-31')); // Returns true
+ * // Example 1: Check if a date is within a range at millisecond granularity
+ * isDateWithinRange(new Date('2024-01-01T12:00:00Z'), {
+ *   minDate: new Date('2024-01-01T00:00:00Z'),
+ *   maxDate: new Date('2024-01-01T23:59:59Z'),
+ *   unit: 'millisecond',
+ * });
+ * // Returns true
  *
  * @example
- * // Example 2: Check if a date is before the minimum date
- * isDateWithinRange(new Date('2023-12-31'), new Date('2024-01-01')); // Returns false
+ * // Example 2: Check if a date is within a range at day granularity
+ * isDateWithinRange(new Date('2024-01-02T12:00:00Z'), {
+ *   minDate: new Date('2024-01-01T00:00:00Z'),
+ *   maxDate: new Date('2024-01-03T00:00:00Z'),
+ *   unit: 'day',
+ * });
+ * // Returns true
  *
  * @example
- * // Example 3: Check if a date is after the maximum date
- * isDateWithinRange(new Date('2025-01-01'), undefined, new Date('2024-12-31')); // Returns false
+ * // Example 3: Check if a date is outside the range
+ * isDateWithinRange(new Date('2025-01-01T12:00:00Z'), {
+ *   minDate: new Date('2024-01-01T00:00:00Z'),
+ *   maxDate: new Date('2024-12-31T23:59:59Z'),
+ *   unit: 'year',
+ * });
+ * // Returns false
  */
 export function isDateWithinRange(
   date: Date,
-  min?: Date | null,
-  max?: Date | null
-) {
-  if (min && date < min) return false;
-  if (max && date > max) return false;
+  options: IsDateWithinRangeOptions = {}
+): boolean {
+  const { minDate, maxDate, unit = 'millisecond' } = options;
+
+  // Normalize the date, minDate, and maxDate based on the provided unit
+  const normalizedDate = normalizeDate(date, unit);
+  const normalizedMin = minDate ? normalizeDate(minDate, unit) : null;
+  const normalizedMax = maxDate ? normalizeDate(maxDate, unit) : null;
+
+  // Compare normalized values
+  isNumberWithinRange(normalizedDate, normalizedMin, normalizedMax);
+  if (normalizedMin !== null && normalizedDate < normalizedMin) return false;
+  if (normalizedMax !== null && normalizedDate > normalizedMax) return false;
+
   return true;
+}
+
+interface IsDateWithinRangeOptions {
+  minDate?: Date | null;
+  maxDate?: Date | null;
+  unit?: DateUnit;
 }

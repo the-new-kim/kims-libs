@@ -1,13 +1,7 @@
 import { FixedLengthArray } from '../types';
+import { DATE_UNITS } from './constants';
 
-export type DateUnit =
-  | 'year'
-  | 'month'
-  | 'day'
-  | 'hour'
-  | 'minute'
-  | 'second'
-  | 'millisecond';
+export type DateUnit = (typeof DATE_UNITS)[number];
 
 export type MonthNames = FixedLengthArray<string, 12>;
 export type WeekDayNames = FixedLengthArray<string, 7>;
