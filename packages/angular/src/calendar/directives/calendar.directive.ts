@@ -67,7 +67,7 @@ export class CalendarDirective
   }
 
   setDate(date: Date, emitChange = true) {
-    if (this._disabled || !this.isValidDateSelection(date)) {
+    if (this._disabled || !isValidDate(date)) {
       return;
     }
     this._date.set(date);
